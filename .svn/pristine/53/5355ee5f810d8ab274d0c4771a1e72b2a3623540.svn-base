@@ -1,0 +1,3831 @@
+<template>
+  <div class="warnings_wrap">
+    <!--       左边-->
+    <div class="warnings_left">
+      <div class="blueTitle" style="margin-bottom: 20px;">热点辅助分析</div>
+      <!--          人员车辆-->
+      <div
+        v-if="
+          $store.state.selectBtn == 'human' || $store.state.selectBtn == 'car'
+        "
+      >
+        <div class="smDivBgr warnings_left_zhz">
+          <div class="zzy">
+            <div class="titlesd" v-if="$store.state.selectBtn == 'human'">
+              <h2>活跃度前五</h2>
+              <h2>{{ fragmentData[0].name }}</h2>
+            </div>
+            <div
+              class="zhzsd"
+              @click="humanFiveTopSelect(item)"
+              v-if="$store.state.selectBtn == 'human'"
+              :class="index != 0 ? 'zhzsd' + (index + 1) : ''"
+              v-for="(item, index) in fragmentData[0].data"
+              :key="index"
+            >
+              <h1>-{{ index + 1 }}-</h1>
+              <!--人的-->
+              <div>
+                <img :src="item.facePicUrl" />
+              </div>
+              <p>{{ item.humanName }}</p>
+              <div class="zhzsddiv">
+                <img src="../../assets/images/jk.png" alt />
+                {{ item.alarmcount }}次
+              </div>
+            </div>
+
+            <div class="titlesd" v-if="$store.state.selectBtn == 'car'">
+              <h2>活跃度前五</h2>
+              <h2>{{ fragmentData[0].name }}</h2>
+            </div>
+            <div
+              class="zhzsd"
+              @click="carFiveTopSelect(item)"
+              v-if="$store.state.selectBtn == 'car'"
+              :class="index != 0 ? 'zhzsd' + (index + 1) : ''"
+              v-for="(item, index) in fragmentData[0].data"
+              :key="index"
+            >
+              <h1>-{{ index + 1 }}-</h1>
+              <div class="carsx">
+                <p>{{ item.plateInfo ? item.plateInfo.substr(0, 2) : "" }}</p>
+                <p>{{ item.plateInfo ? item.plateInfo.substr(2) : "" }}</p>
+              </div>
+              <div class="zhzsddiv">
+                <img src="../../assets/images/jk.png" alt />
+                {{ item.vehicleAlarmCount }}次
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="smDivBgr warnings_left_zhz" style="margin-bottom: 0;">
+          <div class="zzys" v-if="fragmentData[1]">
+            <div class="titlesd" v-if="$store.state.selectBtn == 'human'">
+              <h2>活跃度前五</h2>
+              <h2>{{ fragmentData[1].name ? fragmentData[1].name : "" }}</h2>
+            </div>
+            <div
+              class="zhzsd"
+              @click="humanFiveTopSelect(item)"
+              v-if="$store.state.selectBtn == 'human' && fragmentData[1].data"
+              :class="index != 0 ? 'zhzsd' + (index + 1) : ''"
+              v-for="(item, index) in fragmentData[1].data"
+              :key="index"
+            >
+              <h1>-{{ index + 1 }}-</h1>
+              <!--人的-->
+              <div>
+                <img :src="item.facePicUrl" />
+              </div>
+              <p>{{ item.humanName }}</p>
+              <div class="zhzsddiv">
+                <img src="../../assets/images/jk.png" alt />
+                {{ item.alarmcount }}次
+              </div>
+            </div>
+            <!---->
+            <div class="titlesd" v-if="$store.state.selectBtn == 'car'">
+              <h2>活跃度前五</h2>
+              <h2>{{ fragmentData[1].name ? fragmentData[1].name : "" }}</h2>
+            </div>
+            <div
+              class="zhzsd"
+              @click="carFiveTopSelect(item)"
+              v-if="$store.state.selectBtn == 'car'"
+              :class="index != 0 ? 'zhzsd' + (index + 1) : ''"
+              v-for="(item, index) in fragmentData[1].data"
+              :key="index"
+            >
+              <h1>-{{ index + 1 }}-</h1>
+              <!--车-->
+              <div class="carsx">
+                <p>{{ item.plateInfo ? item.plateInfo.substr(0, 2) : "" }}</p>
+                <p>{{ item.plateInfo ? item.plateInfo.substr(2) : "" }}</p>
+              </div>
+              <div class="zhzsddiv">
+                <img src="../../assets/images/jk.png" alt />
+                {{ item.vehicleAlarmCount }}次
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="swpreCri_wrap">
+          <div
+            :class="item.flag ? 'swper_Active' : ''"
+            v-for="(item, index) in criSwperAll"
+            :key="index"
+            @click="clickCriSwper(item, index)"
+          ></div>
+        </div>
+
+        <div style="margin: 0;" class="smDivBgr warnings_left_zhz">
+          <div>
+            <div class="underlineTitle underlineTitleDd">
+              最活跃的抓拍相机排行
+            </div>
+            <div class="rankingList">
+              <rankingListx
+                ref="rankingListx"
+                @transfer="rankingList"
+              ></rankingListx>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!--          校园小区-->
+      <div
+        v-else-if="
+          $store.state.selectBtn == 'school' ||
+            $store.state.selectBtn == 'estate'
+        "
+        class="campusCommunity_Wrap"
+      >
+        <div class="smDivBgr">
+          <schoolTop
+            ref="schoolTop"
+            @clickSchoolTop="clickSchoolTops"
+          ></schoolTop>
+        </div>
+        <div class="smDivBgr">
+          <schoolTopTow
+            ref="schoolTopTow"
+            @clickSchoolTop="clickSchoolTops"
+          ></schoolTopTow>
+        </div>
+        <div class="smDivBgr">
+          <chart ref="chart"></chart>
+        </div>
+      </div>
+    </div>
+    <!--      中间-->
+    <div class="warnings_content">
+      <div id="container"></div>
+      <div v-if="allFlag.qyFlag" class="addArea" @click="addAreas">
+        新增区域
+      </div>
+      <div class="search" v-if="nhFlag">
+        <input
+          type="text"
+          v-model="searchVal_dl"
+          :placeholder="placeholderStr"
+        />
+        <div @click="searchAll_dl" class="searchBtn">
+          <img src="../../assets/images/search.png" alt />
+        </div>
+      </div>
+
+      <!--
+        @author tanjinfeng
+        @date 2020-12-02
+        @description 增加状态勾选框
+      -->
+      <!-- *** 新增的代码 *** -->
+      <div
+        class="status-checkbox"
+        v-if="rlMuenList"
+      >
+        <div class="status-checkbox__item">
+          <input
+            class="status-checkbox__item__input"
+            type="checkbox"
+            :value="1"
+            v-model="status"
+          >
+          <span class="status-checkbox__item__name">待核实</span>
+        </div>
+        <div class="status-checkbox__item">
+          <input
+            class="status-checkbox__item__input"
+            type="checkbox"
+            :value="2"
+            v-model="status"
+          >
+          <span class="status-checkbox__item__name">核实中</span>
+        </div>
+        <div class="status-checkbox__item">
+          <input
+            class="status-checkbox__item__input"
+            type="checkbox"
+            :value="3"
+            v-model="status"
+          >
+          <span class="status-checkbox__item__name">待处理</span>
+        </div>
+        <div class="status-checkbox__item">
+          <input
+            class="status-checkbox__item__input"
+            type="checkbox"
+            :value="4"
+            v-model="status"
+          >
+          <span class="status-checkbox__item__name">处理中</span>
+        </div>
+        <div class="status-checkbox__item">
+          <input
+            class="status-checkbox__item__input"
+            type="checkbox"
+            :value="5"
+            v-model="status"
+          >
+          <span class="status-checkbox__item__name">已处理</span>
+        </div>
+        <div class="status-checkbox__item">
+          <input
+            class="status-checkbox__item__input"
+            type="checkbox"
+            :value="6"
+            v-model="status"
+          >
+          <span class="status-checkbox__item__name">超出范围</span>
+        </div>
+        <div class="status-checkbox__item">
+          <input
+            class="status-checkbox__item__input"
+            type="checkbox"
+            :value="7"
+            v-model="status"
+          >
+          <span class="status-checkbox__item__name">已关闭</span>
+        </div>
+      </div>
+      <!-- *** 结束 *** -->
+
+      <div class="searchList" v-if="nhFlag && searchListData.length != 0">
+        <el-scrollbar style="height: 100%;">
+          <div
+            v-for="(item, index) in searchListData"
+            :key="index"
+            class="searchChildrenList"
+            @click="clickListx({ item })"
+          >
+            {{ item.platformName }}
+          </div>
+        </el-scrollbar>
+      </div>
+      <div class="box">
+        <div class="boxs" @click.stop="allFlag.openFlag = !allFlag.openFlag">
+          <div class="boxsx" :class="allFlag.openFlag ? 'boxsxWh' : 'boxsxWhs'">
+            <div style="margin-left: 30px;" class="ads" @click.stop="reClick">
+              <img src="../../assets/images/rl.png" alt v-if="allFlag.rlFlag" />
+              <img
+                src="../../assets/images/rl1.png"
+                alt
+                v-if="!allFlag.rlFlag"
+              />
+              <p>热力图</p>
+            </div>
+            <div class="ads" @click.stop="wxClick">
+              <img src="../../assets/images/wx.png" alt v-if="allFlag.wxFlag" />
+              <img
+                src="../../assets/images/wx1.png"
+                alt
+                v-if="!allFlag.wxFlag"
+              />
+              <p>卫星图</p>
+            </div>
+            <div class="ads" @click.stop="qyClick">
+              <img src="../../assets/images/qy.png" alt v-if="allFlag.qyFlag" />
+              <img
+                src="../../assets/images/qy1.png"
+                alt
+                v-if="!allFlag.qyFlag"
+              />
+              <p>区域</p>
+            </div>
+            <!--                  <div class="ads" @click.stop="mapClick">-->
+            <!--                    <img src="../../assets/images/map.png" alt="" v-if="mapFlag">-->
+            <!--                    <img src="../../assets/images/map1.png" alt="" v-if="!mapFlag">-->
+            <!--                    <p>定位</p>-->
+            <!--                  </div>-->
+            <div class="ads" @click.stop="nhClick">
+              <img src="../../assets/images/nh.png" alt v-if="nhFlag" />
+              <img src="../../assets/images/nh1.png" alt v-if="!nhFlag" />
+              <p>搜索</p>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="elect">
+        <div
+          class="radio"
+          v-if="
+            $store.state.selectBtn == 'human' || $store.state.selectBtn == 'car'
+          "
+          v-for="(item, index) in rlMuenList"
+          :key="index"
+          @click.stop="selectHotLXBtn(item)"
+        >
+          <input
+            :id="'radio' + index"
+            name="radio"
+            type="radio"
+            :checked="index == rlMuenList.length - 1 ? true : false"
+            @click.stop="selectHotLXBtn(item)"
+          />
+          <label
+            :for="'radio' + index"
+            class="radio-label"
+            @click.stop="selectHotLXBtn(item)"
+            >{{ item.name }}</label
+          >
+        </div>
+        <div
+          class="radio"
+          v-if="
+            $store.state.selectBtn == 'school' ||
+              $store.state.selectBtn == 'estate'
+          "
+          v-for="(item, index) in rlMuenList"
+          :key="index"
+          @click.stop="getSchoolEstateHot(item)"
+        >
+          <input
+            :id="'radio' + index"
+            name="radio"
+            type="radio"
+            :checked="index == rlMuenList.length - 1 ? true : false"
+            @click.stop="getSchoolEstateHot(item)"
+          />
+          <label
+            :for="'radio' + index"
+            class="radio-label"
+            @click.stop="getSchoolEstateHot(item)"
+            >{{ item.name }}</label
+          >
+        </div>
+      </div>
+    </div>
+    <!--      右边-->
+    <div class="warnings_right">
+      <div
+        v-if="
+          ($store.state.selectBtn == 'human' && allFlag.warnings_rightFlag) ||
+            ($store.state.selectBtn == 'car' && allFlag.warnings_rightFlag)
+        "
+      >
+        <div class="blueTitle" style="margin-bottom: 20px;">实时预警信息</div>
+        <div class="smDivBgr warnings_right_zhz">
+          <el-scrollbar style="height: 100%;">
+            <loadingList
+              ref="loadingList"
+              @coordinate="coordinate"
+              @coordinateDialog="coordinateDialog"
+            ></loadingList>
+            <loading></loading>
+          </el-scrollbar>
+        </div>
+      </div>
+      <!--历史-->
+      <div class="historicalInformation">
+        <div
+          class="blueTitle"
+          v-if="
+            $store.state.selectBtn == 'school' ||
+              $store.state.selectBtn == 'estate' ||
+              allFlag.warnings_rightTowFlag ||
+              allFlag.typeFlag ||
+              allFlag.cameraFlag
+          "
+          style="margin-bottom: 20px;"
+        >
+          总量统计
+        </div>
+        <div
+          class="smDivBgr historicalInformation_content"
+          v-if="
+            ($store.state.selectBtn == 'human' &&
+              allFlag.warnings_rightTowFlag) ||
+              ($store.state.selectBtn == 'car' && allFlag.warnings_rightTowFlag)
+          "
+        >
+          <img
+            src="../../assets/images/back.png"
+            alt
+            v-show="backBtn"
+            @click="backs"
+            class="xsd"
+          />
+          <img
+            src="../../assets/images/close.png"
+            alt
+            @click="closeOne"
+            class="xsds"
+          />
+          <div class="border_wrap historicalInformation_content_div">
+            <p>{{ humanEntity.listLibName }}</p>
+            <div class="historicalInformation_content_div_div">
+              <div
+                v-if="$store.state.selectBtn == 'human'"
+                class="historicalInformation_content_human"
+              >
+                <viewer>
+                  <img :src="humanEntity.facePicUrl" alt />
+                </viewer>
+                <p>{{ humanEntity.humanName }}</p>
+              </div>
+              <div
+                class="historicalInformation_content_car"
+                v-if="$store.state.selectBtn == 'car'"
+              >
+                {{ plateInfo }}
+              </div>
+
+              <div class="xjDiv" style="margin-left: 3px;">
+                <p>{{ cameraNum }}</p>
+                <p>抓拍相机</p>
+              </div>
+              <div class="xjDiv">
+                <p>{{ allPhotograph }}</p>
+                <p>抓拍次数</p>
+              </div>
+            </div>
+            <div v-show="$store.state.selectBtn == 'human'" class="card">
+              {{
+                humanEntity.credentialsNum.substr(0, 4) +
+                  "****" +
+                  humanEntity.credentialsNum.substr(
+                    humanEntity.credentialsNum.length - 4
+                  )
+              }}
+            </div>
+          </div>
+          <div>
+            <trackCamera ref="trackCamera" @backBtn="backVis"></trackCamera>
+          </div>
+        </div>
+
+        <div
+          v-if="
+            ($store.state.selectBtn == 'human' && allFlag.typeFlag) ||
+              ($store.state.selectBtn == 'car' && allFlag.typeFlag)
+          "
+          class="smDivBgr historicalInformation_content"
+        >
+          <img
+            v-if="allFlag.typeCeamreFlag"
+            @click="typeCeamreBack(false)"
+            class="xsd"
+            src="../../assets/images/back.png"
+            alt
+          />
+          <img
+            src="../../assets/images/close.png"
+            class="xsds"
+            @click="closeOne"
+            alt
+          />
+          <div style="margin-top: 40px">
+            <HeaderInformation ref="HeaderInformation"></HeaderInformation>
+          </div>
+          <div
+            v-if="!allFlag.typeCeamreFlag"
+            style="margin: 30px 17px 0;height: 652px;"
+            class="smDivBgr"
+          >
+            <el-scrollbar style="height: 100%;">
+              <rankingListxTow
+                @transfer="rankingListxTows"
+                ref="rankingListxTow"
+              ></rankingListxTow>
+            </el-scrollbar>
+          </div>
+          <div v-if="allFlag.typeCeamreFlag">
+            <div class="tongji_title">
+              <span>{{ typeData.name }}</span>
+              <p>
+                抓拍次数
+                <span>{{ typeData.alarmcount }}</span>
+              </p>
+            </div>
+            <div style="height: 584px;" class="scrollbarHide">
+              <el-scrollbar style="height: 100%;">
+                <timelineTow ref="timelineTow"></timelineTow>
+              </el-scrollbar>
+            </div>
+          </div>
+        </div>
+        <!--          相机-->
+        <div
+          class="cjWrap"
+          v-if="
+            ($store.state.selectBtn == 'human' && allFlag.cameraFlag) ||
+              ($store.state.selectBtn == 'car' && allFlag.cameraFlag)
+          "
+        >
+          <div class="smDivBgr cjWrap_content">
+            <img
+              class="closeImg"
+              src="../../assets/images/close.png"
+              @click="closeOne"
+              alt
+            />
+            <div style="height: 40px;"></div>
+            <div class="scr">
+              <div class="allNum">
+                <div>
+                  <div>{{ humanCameraAllNumData[0] }}</div>
+                  <div>{{ humanCameraAllNumData[1] }}</div>
+                  <div>{{ humanCameraAllNumData[2] }}</div>
+                  <div>{{ humanCameraAllNumData[3] }}</div>
+                  <div>{{ humanCameraAllNumData[4] }}</div>
+                </div>
+
+                <span>抓拍总数</span>
+              </div>
+              <div class="dataList">
+                <div
+                  class="dataList_wrap"
+                  :class="pull_downFlag ? 'heightTwo' : ''"
+                >
+                  <div
+                    v-for="(item, index) in humanCameraData"
+                    :class="'list' + (index + 1)"
+                    :key="index"
+                    @click="typeClick(item)"
+                  >
+                    <span>{{ index + 1 }}.{{ item.typeName }}</span>
+                    <span>{{ item.alarmCount }}</span>
+                  </div>
+                </div>
+                <div
+                  style="height: 63px;"
+                  v-if="humanCameraData.length < 5"
+                ></div>
+                <div class="dataList_btn" v-if="humanCameraData.length > 5">
+                  <div>
+                    <img src="../../assets/images/zs.png" alt />
+                    点击类型查看抓拍详情
+                  </div>
+                  <img
+                    @click="pull_down($event)"
+                    :class="pull_downFlag ? '' : 'overturn'"
+                    src="../../assets/images/xl.png"
+                    alt
+                  />
+                </div>
+              </div>
+              <div class="flexs1">
+                <div class="dataList_title" style="height: 385px;">
+                  <div class="dataList_back">
+                    <span>{{
+                      allFlag.typeClickFlag ? typeCilckStr : "全部"
+                    }}</span>
+                    <img
+                      src="../../assets/images/back.png"
+                      alt
+                      @click="typeClickBack"
+                      v-if="allFlag.typeClickFlag"
+                    />
+                  </div>
+                  <div class="assignment">
+                    <div class="dataList_content">
+                      <el-scrollbar style="height: 100%;">
+                        <timelines ref="timeliness"></timelines>
+                      </el-scrollbar>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!--           校园小区-->
+        <div
+          v-if="
+            $store.state.selectBtn == 'school' ||
+              $store.state.selectBtn == 'estate'
+          "
+        >
+          <div class="smDivBgr cjWrap_content">
+            <img
+              v-if="allFlag.schoolEacstFlag"
+              @click="closeTow"
+              class="closeImg"
+              src="../../assets/images/close.png"
+              alt
+            />
+            <div style="height: 30px;"></div>
+            <!--校园-->
+            <div
+              class="schoolTopNums"
+              v-show="$store.state.selectBtn == 'school'"
+            >
+              <schoolTopNum ref="schoolTopNum"></schoolTopNum>
+            </div>
+            <div class="FlowBall" v-if="$store.state.selectBtn == 'school'">
+              <img
+                @click="FlowBallLeftSchool"
+                class="FlowBallLeftImg"
+                src="../../assets/images/left.png"
+                alt
+              />
+              <img
+                @click="FlowBallRightSchool"
+                class="FlowBallRightImg"
+                src="../../assets/images/right.png"
+                alt
+              />
+              <div style="margin: 0 20px;overflow:hidden;">
+                <div
+                  ref="FlowBallTransSchool"
+                  style="display: flex;margin-left: -20px;transition: 1s;"
+                >
+                  <cs ref="cs"></cs>
+                </div>
+              </div>
+            </div>
+            <!--小区-->
+            <div
+              class="schoolTopNumTows"
+              v-show="$store.state.selectBtn == 'estate'"
+            >
+              <schoolTopNumTow ref="schoolTopNumTow"></schoolTopNumTow>
+            </div>
+            <div class="FlowBall" v-if="$store.state.selectBtn == 'estate'">
+              <img
+                @click="FlowBallLeftEstate"
+                class="FlowBallLeftImg"
+                src="../../assets/images/left.png"
+                alt
+              />
+              <img
+                @click="FlowBallRightEstate"
+                class="FlowBallRightImg"
+                src="../../assets/images/right.png"
+                alt
+              />
+              <div style="margin: 0 20px;overflow:hidden;">
+                <div
+                  ref="FlowBallTransEstate"
+                  style="display: flex;margin-left: -20px;transition: 1s;"
+                >
+                  <csTow ref="csTow"></csTow>
+                </div>
+              </div>
+            </div>
+            <!--               校园和小区的公共部分-->
+            <div class="RankingList" v-if="!allFlag.schoolEacstFlag">
+              <el-scrollbar style="height: 100%;">
+                <RankingLists
+                  ref="RankingLists"
+                  @clickLists="clickListxs"
+                ></RankingLists>
+              </el-scrollbar>
+            </div>
+
+            <div class="loadingListTows" v-if="allFlag.schoolEacstFlag">
+              <el-scrollbar style="height: 100%;">
+                <loadingListTow
+                  ref="loadingListTow"
+                  @coordinate="coordinate"
+                  @coordinateDialog="coordinateDialog"
+                ></loadingListTow>
+              </el-scrollbar>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <pop_upWindows ref="pop_upWindows"></pop_upWindows>
+      <alert-check-human ref="alertCheckHuman"></alert-check-human>
+      <alert-check-vehicle ref="alertCheckVehicle"></alert-check-vehicle>
+
+      <!-- <humanSockjs></humanSockjs> -->
+      <!-- <schoolEatate></schoolEatate> -->
+    </div>
+
+    <addAreax ref="addAreax"></addAreax>
+    <sockejs ref="sockejs" @sockets="sockets"></sockejs>
+    <!-- 学校详情弹窗 -->
+    <SchoolDetailDialog ref="SchoolDetailDialog"/>
+    <!-- websocket通知框 -->
+    <Notice/>
+  </div>
+</template>
+
+<script>
+import rankingListx from "./templat/rankingListx";
+import rankingListxTow from "./templat/rankingListx";
+import loadingList from "./templat/loadingList";
+import loadingListTow from "./templat/loadingList";
+import allUrl from "../../assets/api/allApiUrl";
+import cs from "./templat/cs";
+import csTow from "./templat/cs";
+import loading from "../common/loading";
+import quyu from "../../assets/js/quyu";
+import zhengChengLngLat from "../../assets/js/zhengChengLngLat";
+import trackCamera from "./templat/trackCamera";
+import timelines from "./templat/timeline";
+import timelineTow from "./templat/timeline";
+import HeaderInformation from "./templat/HeaderInformation";
+import schoolTop from "./templat/schoolTop";
+import schoolTopTow from "./templat/schoolTop";
+import chart from "./templat/chart";
+import schoolTopNum from "./school/schoolTopNum";
+import schoolTopNumTow from "./school/schoolTopNum";
+import RankingLists from "./school/RankingList";
+import humanSockjs from "./humanSockjs";
+import schoolEatate from "./schoolEatate";
+import pop_upWindows from "../common/pop_upWindows";
+import alertCheckHuman from "../common/alertCheckHuman";
+import alertCheckVehicle from "../common/alertCheckVehicle";
+import bus from "../../assets/js/bus";
+import addAreax from "./addArea/addAreax";
+import sockejs from "./sockje/sockejs.vue";
+// 学校查看详情弹窗
+import SchoolDetailDialog from './templat/SchoolDetailDialog'
+
+// websocket通知框
+import Notice from './Notice.vue'
+
+export default {
+  name: "warnings",
+  data() {
+    return {
+      humanAndCarAllData: [],
+      fragmentData: [
+        { name: "", data: [] },
+        { name: "", data: [] }
+      ],
+      criIndex: 0,
+      criSwperAll: [{ flag: true }],
+      clickEle: "",
+      map: "",
+      layer: "",
+      polyline: "",
+      allFlag: {
+        openFlag: false,
+        rlFlag: true,
+        wxFlag: true,
+        qyFlag: false,
+        mapFlag: false,
+        warnings_rightFlag: true,
+        cameraFlag: false,
+        typeFlag: false,
+        typeCeamreFlag: false,
+        typeClickFlag: false,
+        warnings_rightTowFlag: false,
+        schoolEacstFlag: false
+      },
+      nhFlag: false,
+      rankingListIndexData: {},
+      carkingListIndexData: {},
+      typeCilckStr: "全部",
+      wx: new AMap.TileLayer.Satellite(),
+      HumanListsPage: 1,
+      humanFiveTopSelectPage: 1,
+      carFiveTopSelectPage: 1,
+      huamnCameraPage: 1,
+      humanRankingListPagexs: 1,
+      humanRankingListPagespo: 1,
+      carRankingListPagesx: 1,
+      carRankingListPagespo: 1,
+      carRankingListPagesItem: "",
+      humanRankingListPageItem: "",
+      humanRankingListPagespoItem: "",
+      carRankingListPagespoItem: "",
+      humanAndCaItems: "",
+      huamnCameraItem: "",
+      clickListxItem: "",
+      clickListxPage: 1,
+      getBottomFlag: true,
+      Timeout: "",
+      rlMuenList: [],
+      allMuenList: [],
+      humanjsMap: "",
+      placeholderStr: "",
+      startMarker: "",
+      pull_downFlag: true,
+      mapBus: "",
+      backBtn: false,
+      allPhotograph: 0,
+      plateInfo: "",
+      humanEntity: {
+        credentialsNum: "",
+        humanName: "",
+        listLibName: "",
+        facePicUrl: ""
+      },
+      cameraNum: 0,
+      humanId: "",
+      humanCameraData: [],
+      humanCameraAllNumData: 0,
+      typeID: "",
+      typeData: {},
+      typeDataList: { allnum: 0, num: 0 },
+      searchVal_dl: "",
+      searchListData: [],
+      // 地图下方的status
+      status: [],
+      // 地图下方的选择器当前选定的学校和小区item
+      schoolAndEstateItem: '',
+    };
+  },
+  methods: {
+    sockets() {
+      this.ifSelectBtn();
+    },
+    // 点击圆点
+    clickCriSwper(item, index) {
+      this.criSwperAll.forEach(ele => {
+        ele.flag = false;
+      });
+      item.flag = true;
+      this.criIndex = index;
+      this.fragmentData = this.humanAndCarAllData[index];
+    },
+    mapLoning() {
+      // 116.502328,39.806318 北京亦庄新区
+      // 113.824713,23.286085 广州增城
+      // 113.309557,23.152476 沙河街道
+      let _that = this;
+      const map = new AMap.Map("container", {
+        center: [0, 0],
+        zoom: 11
+      });
+      // let data = allUrl.userInfo,s={params:{}}
+      // Object.assign(data,s) // 合并对象, 只是把参数搞成对象形式 {}
+      // this.apix(data)
+      //     .then((res)=>{
+      //         console.log(res.data)
+      //     })
+      //     .catch((err)=>{
+      //         console.log(err)
+      //     })
+
+      map.add(this.wx);
+      this.map = map;
+      sessionStorage.street = '{"log":113.313823,"lat":23.146965}';
+      setTimeout(() => {
+        let setLogLat = JSON.parse(sessionStorage.street);
+        _that.map.setZoomAndCenter(11, [setLogLat.log, setLogLat.lat]);
+        console.log(setLogLat);
+      }, 500);
+    },
+    // 搜索
+    searchAll_dl() {
+      // console.log(this.$store.state)
+      let data = {
+        ...allUrl.listByConditions,
+        params: {
+          type: 6,
+          keyword: this.searchVal_dl
+        }
+      };
+      // console.log(data)
+      data.header = {
+        "Content-type": "application/json"
+      };
+      this.apix(data)
+        .then(res => {
+          console.log(res.list);
+          this.searchListData = res.list;
+        })
+        .catch(err => {
+          console.log(err);
+        });
+    },
+    setHotMap(data) {
+      let that = this;
+      that.allFlag.rlFlag = true;
+      if (that.humanjsMap) {
+        that.humanjsMap.setMap(null); // 清除地图覆盖物
+      }
+      let humanjsMapArr = [];
+      data.forEach(function(ele, ind) {
+        var obj = {
+          lat: ele.lat,
+          lng: ele.lng
+        };
+        if (that.$store.state.selectBtn == "human") {
+          /**
+           * @author tanjinfeng
+           * @date 2020-10-23
+           * @desc 后台数据人的统计字段是num
+           */
+          // ******原来的代码******
+          // obj.count = ele.count;
+          // ******修改的代码******
+          obj.count = ele.num;
+          // ********结束*********
+        } else if (that.$store.state.selectBtn == "car") {
+          obj.count = ele.num;
+        } else if (that.$store.state.selectBtn == "school") {
+          obj.count = ele.alarmCount;
+        } else if (that.$store.state.selectBtn == "estate") {
+          obj.count = ele.alarmCount;
+        }
+        /**
+         * @author tanjinfeng
+         * @date 2020-11-23
+         * @description DEBUG: 数据经纬度坐标为空或不存在时，热力图渲染报错导致地图卡死，增加判断条件，经纬度存在的数据才拿去渲染
+         */
+        // *** 原来的代码 ***
+        // humanjsMapArr.push(obj);
+        // *** 修改后的代码 ***
+        if (obj.lat && obj.lng) { humanjsMapArr.push(obj); }
+        // *** 结束 ***
+      });
+      let max = 0;
+      humanjsMapArr.forEach(ele => {
+        if (ele.count > max) {
+          max = ele.count;
+        }
+      });
+      // 人的
+      that.map.plugin(["AMap.Heatmap"], function() {
+        //初始化heatmap对象
+        that.humanjsMap = new AMap.Heatmap(that.map, {
+          radius: 50, //给定半径
+          opacity: [0, 0.8]
+        });
+        //设置数据集：该数据为北京部分“公园”数据
+        that.humanjsMap.setDataSet({
+          data: humanjsMapArr,
+          max: max
+        });
+      });
+    },
+    scroll(page) {
+      let scroll = document.getElementsByClassName("el-scrollbar__wrap")[0];
+      let _that = this;
+      if (page == 1) {
+        scroll.scrollTop = 1;
+      }
+      scroll.addEventListener("scroll", function(e) {
+        if (
+          parseInt(e.target.clientHeight) + parseInt(e.target.scrollTop) ===
+          parseInt(e.target.scrollHeight)
+        ) {
+          console.log("到底");
+          if (_that.getBottomFlag) {
+            _that.getBottomFlag = false;
+            _that.HumanListsPage += 1;
+            _that.Timeout = setTimeout(function() {
+              if (_that.$store.state.selectBtn == "human") {
+                _that.getHumanLists();
+              } else if (_that.$store.state.selectBtn == "car") {
+                _that.getriskvehiclealarm();
+              } else if (_that.$store.state.selectBtn == "estate") {
+                _that.clickListxPage += 1;
+                _that.clickListx(_that.clickListxItem);
+              } else if (_that.$store.state.selectBtn == "school") {
+                _that.clickListxPage += 1;
+                _that.clickListx(_that.clickListxItem);
+              }
+            }, 500);
+          }
+        }
+      });
+    },
+    reClick() {
+      this.allFlag.rlFlag = !this.allFlag.rlFlag;
+      if (this.allFlag.rlFlag && this.humanjsMap) {
+        this.humanjsMap.show();
+      } else if (this.humanjsMap) {
+        this.humanjsMap.hide();
+      }
+    },
+    wxClick() {
+      if (this.allFlag.wxFlag) {
+        this.map.remove(this.wx);
+        this.allFlag.wxFlag = false;
+      } else {
+        this.map.add(this.wx);
+        this.allFlag.wxFlag = true;
+      }
+    },
+    qyClick() {
+      this.flagState(["allFlag", "qyFlag"]);
+      if (this.allFlag.qyFlag) {
+        this.allFlag.rlFlag = false;
+        if (this.humanjsMap) {
+          this.humanjsMap.hide();
+        }
+        if (this.startMarker) {
+          this.map.remove(this.startMarker);
+        }
+        var zengjiangLngLat = zhengChengLngLat.zengjiangLngLat;
+        var shitanLngLat = zhengChengLngLat.shitanLngLat;
+        var xiancunLngLat = zhengChengLngLat.xiancunLngLat;
+        var xintangLngLat = zhengChengLngLat.xintangLngLat;
+        var yongningLngLat = zhengChengLngLat.yongningLngLat;
+        var zhongxinLngLat = zhengChengLngLat.zhongxinLngLat;
+        var zhucunLngLat = zhengChengLngLat.zhucunLngLat;
+        var lichengLngLat = zhengChengLngLat.lichengLngLat;
+        var xiaolouLngLat = zhengChengLngLat.xiaolouLngLat;
+        var zhengguoLngLat = zhengChengLngLat.zhengguoLngLat;
+        var paitanLngLat = zhengChengLngLat.paitanLngLat;
+        quyu(
+          this.map,
+          zengjiangLngLat,
+          shitanLngLat,
+          xiancunLngLat,
+          xintangLngLat,
+          yongningLngLat,
+          zhongxinLngLat,
+          zhucunLngLat,
+          lichengLngLat,
+          xiaolouLngLat,
+          zhengguoLngLat,
+          paitanLngLat
+        );
+        // lqxsq,syshlsq,xjsq,xldhlsq,xyjaq,yfjsq,zzysq
+        // var lqxsq = zhengChengLngLat.lqxsq
+        // var syshlsq = zhengChengLngLat.syshlsq
+        // var xjsq = zhengChengLngLat.xjsq
+        // var xldhlsq = zhengChengLngLat.xldhlsq
+        // var xyjaq = zhengChengLngLat.xyjaq
+        // var yfjsq = zhengChengLngLat.yfjsq
+        // var zzysq = zhengChengLngLat.zzysq
+        // quyu(this.map,lqxsq,syshlsq,xjsq,xldhlsq,xyjaq,yfjsq,zzysq)
+      } else {
+        this.map.clearMap(); // 清除地图覆盖物
+      }
+    },
+    mapClick() {
+      this.flagState(["allFlag", "mapFlag"]);
+    },
+    nhClick() {
+      if (this["nhFlag"]) {
+        this["nhFlag"] = false;
+      } else {
+        this["nhFlag"] = true;
+      }
+    },
+    flagState(data) {
+      if (this[data[0]][data[1]]) {
+        this[data[0]][data[1]] = false;
+      } else {
+        this[data[0]][data[1]] = true;
+      }
+    },
+    setPlaceholder() {
+      let types = this.$store.state.selectBtn;
+      if (types == "human" || types == "car") {
+        this.placeholderStr = "搜相机名称";
+      } else if (types == "school") {
+        this.placeholderStr = "搜学校";
+      } else if (types == "estate") {
+        this.placeholderStr = "搜小区";
+      }
+    },
+    coordinate(item) {
+      // console.log(item)
+      console.log(item, item.longitude, item.latitude);
+      if ((item.longitude, item.latitude)) {
+        this.map.setZoomAndCenter(20, [item.longitude, item.latitude]);
+        let img = require("../../assets/images/camera.png");
+        this.addMarck(item.longitude, item.latitude, img);
+      }
+      /**
+       * @author tanjinfeng
+       * @date 2020-10-20
+       * @desc 学校的弹窗修改
+       */
+      // *****************原来的代码*******************
+      // if (
+      //   this.$store.state.selectBtn == "estate" ||
+      //   this.$store.state.selectBtn == "school"
+      // ) {
+      //   this.$refs.pop_upWindows.init(item, 5);
+      // }
+      // *****************修改后代码********************
+      // if (this.$store.state.selectBtn == "estate") {
+      //   // 小区
+      //   this.$refs.pop_upWindows.init(item, 5);
+      // } else if (this.$store.state.selectBtn == "school") {
+      //   // 学校
+      //   this.$refs.SchoolDetailDialog.init(item)
+      // }
+      // ******************结束************************
+
+
+      // if (this.$store.state.selectBtn == "human") {
+      //   // console.log("2222222222222222");
+      //   this.$refs.alertCheckHuman.init(item.id);
+      // }
+      // if (this.$store.state.selectBtn == "car") {
+      //   // console.log("33333333333333333");
+      //   this.$refs.alertCheckVehicle.init(item.plateInfo);
+      // }
+      /**
+       * @author tanjinfeng
+       * @date 2020.09.07
+       * @desc 点击框体显示落点轨迹
+       */
+      if (this.$store.state.selectBtn == 'human') {
+        this.getTodayRecordAndDraw(item.id)
+      } else if (this.$store.state.selectBtn == "car") {
+        this.getTodayRecordAndDraw(item.plateInfo)
+      }
+    },
+
+    coordinateDialog(item) {
+      if (
+        this.$store.state.selectBtn == "estate" ||
+        this.$store.state.selectBtn == "school"
+      ) {
+        this.$refs.pop_upWindows.init(item, 5);
+      }
+      if (this.$store.state.selectBtn == "human") {
+        // console.log("2222222222222222");
+        this.$refs.alertCheckHuman.init(item.id);
+      }
+      if (this.$store.state.selectBtn == "car") {
+        // console.log("33333333333333333");
+        this.$refs.alertCheckVehicle.init(item.plateInfo);
+      }
+    },
+
+    /**
+     * @method
+     * @author tanjinfeng
+     * @date 2020.09.07
+     * @last_modified 2020-09-14
+     * @desc 获取top_nav时间范围的所有记录
+     * @param {Number} id 用于查询详情
+     */
+    getTodayRecordAndDraw(id) {
+      // 获取当前日期：yyyy-mm-dd
+      // const date = new Date()
+      // const startAt = `${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()}`
+      // const endAt = startAt
+      const startAt = this.$store.state.startTime
+      const endAt = this.$store.state.endTime
+      // 获取人员的记录
+      if(this.$store.state.selectBtn == 'human') {
+        // 获取某个人的详情
+        this.apix({
+          ...allUrl.getHumanInfo,
+          params: {
+            id
+          }
+        })
+        .then(
+          response => {
+            if(response.code == 0) {
+              // 根据详情中的humanId查询记录
+              const humanId = response.riskHumanAlarmInfo.humanId
+              const request = {
+                ... allUrl.getHumanAlarmList,
+                params: {
+                  limit: 100,
+                  page: 1,
+                  startAt,
+                  endAt,
+                  humanId,
+                  cameraName: ''
+                }
+              }
+              this.apix(request)
+              .then(
+                response => {
+                  if(response.code == 0) {
+                    // 地图上画出落点和轨迹
+                    this.drawMarkerAndRoute(response.page.records)
+                  } else {
+                    console.log('get human today record error', response)
+                  }
+                }
+              )
+              .catch(
+                error => {
+                  console.log('get human today record error', error)
+                }
+              )
+            }
+            else {
+              console.log('get human info error:', response)
+            }
+          }
+        )
+        .catch(
+          error => {
+            console.log('get human info error:', error)
+          }
+        )
+      }
+      // 获取车的记录
+      else if(this.$store.state.selectBtn == 'car') {
+        const request = {
+          ...allUrl.riskvehiclealarm,
+            params: {
+            limit: 100,
+            page: 1,
+            startAt,
+            endAt,
+            carNum: id,
+            cameraName: '',
+            platformId: window.sessionStorage.getItem("search").split("&")[1].split("=")[1]
+          }
+        }
+        this.apix(request)
+        .then(
+          response => {
+            if(response.code == 0) {
+              this.drawMarkerAndRoute(response.page.records)
+            } else {
+              console.log('get car info error', response)
+            }
+          }
+        )
+        .catch(
+          error => {
+            console.log('get car info error', error)
+          }
+        )
+      }
+    },
+
+    /**
+     * @method
+     * @autho tanjinfeng
+     * @date 2020.09.07
+     * @desc 地图上画出落点和轨迹
+     */
+    drawMarkerAndRoute(coordinateList) {
+      console.log('coordinate list', coordinateList)
+      // 清空之前的落点和轨迹
+      this.map.clearMap()
+      let icon = ''
+      let polylinePath = []
+      if(this.$store.state.selectBtn == 'car') {
+        icon = new AMap.Icon({
+          image: 'data:image/png;base64,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',
+          size: new AMap.Size(38, 52),
+          imageSize: new AMap.Size(38, 52),
+          imageOffset: new AMap.Pixel(0, 0)
+        })
+      } else if(this.$store.state.selectBtn == 'human') {
+        icon = new AMap.Icon({
+          image: 'data:image/png;base64,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',
+          size: new AMap.Size(38, 52),
+          imageSize: new AMap.Size(38, 52),
+          imageOffset: new AMap.Pixel(0, 0)
+        })
+      }
+      coordinateList.forEach(
+        item => {
+          if(item.latitude && item.longitude) {
+            let marker = new AMap.Marker({
+              icon,
+              position: [item.longitude, item.latitude],
+              map: this.map,
+              offset: new AMap.Pixel(-19,-39)
+            })
+            polylinePath.push(marker.getPosition())
+          } else if(item.riskCameraEntity && item.riskCameraEntity.longitude && item.riskCameraEntity.latitude) {
+            let marker = new AMap.Marker({
+              icon,
+              position: [item.riskCameraEntity.longitude, item.riskCameraEntity.latitude],
+              map: this.map,
+              offset: new AMap.Pixel(-19,-39)
+            })
+            polylinePath.push(marker.getPosition())
+          }
+        }
+      )
+      let polyline = new AMap.Polyline({
+        path: polylinePath,
+        map: this.map,
+        strokeColor: "#FF0000"
+      });
+    },
+
+    //添加标记
+    addMarck(log, lat, image = "") {
+      this.map.remove(this.startMarker);
+      // 创建一个 Icon
+      var startIcon = new AMap.Icon({
+        // 图标尺寸
+        size: new AMap.Size(25, 34),
+        // 图标的取图地址
+        image: image,
+        // 图标所用图片大小
+        imageSize: new AMap.Size(25, 34),
+        // 图标取图偏移量
+        imageOffset: new AMap.Pixel(0, 0),
+        zIndex: 2000
+      });
+      // 将 icon 传入 marker
+      this.startMarker = new AMap.Marker({
+        position: new AMap.LngLat(log, lat),
+        icon: startIcon,
+        offset: new AMap.Pixel(-13, -34),
+        zIndex: 2000
+      });
+      // 将 markers 添加到地图
+      this.map.add([this.startMarker]);
+    },
+    //批量设置标记
+    allAddMarck(LabelsData, type) {
+      let _that = this;
+      if (this.layer) {
+        this.map.remove(this.layer);
+      }
+      this.layer = new AMap.LabelsLayer({
+        zooms: [11, 20],
+        zIndex: 100,
+        // 开启标注避让，默认为开启，v1.4.15 新增属性
+        collision: false,
+        // 开启标注淡入动画，默认为开启，v1.4.15 新增属性
+        animation: true
+      });
+      this.map.add(this.layer);
+      var markers = [];
+      console.log(LabelsData);
+      for (var i = 0; i < LabelsData.length; i++) {
+        var curData = LabelsData[i];
+        let text = "";
+        if (type == "human") {
+          text = curData.cameraName + "/" + curData.num + "件";
+          curData.indexCode =
+            "human/" + curData.index_code + "/" + curData.controlTypeId;
+        } else if (type == "car") {
+          curData.indexCode =
+            "car/" + curData.crossing_id + "/" + curData.typeId;
+          text = curData.cameraName + "/" + curData.num + "件";
+        } else if (type == "school") {
+          curData.indexCode =
+            "car/" + curData.crossing_id + "/" + curData.typeId;
+          text = curData.platformName + "/" + curData.alarmCount + "件";
+        }
+        curData.name = curData.cameraName;
+        curData.position = [curData.lng, curData.lat];
+        curData.zooms = [15, 20];
+        curData.zIndex = 100;
+        curData.id = i;
+        curData.icon = {
+          type: "image",
+          image: "https://a.amap.com/jsapi_demos/static/images/poi-marker.png",
+          clipOrigin: [14, 92],
+          clipSize: [50, 68],
+          size: [25, 34],
+          anchor: "bottom-center",
+          angel: 0,
+          retina: true
+        };
+        /**
+         * @author tanjinfeng
+         * @desc 关闭避让
+         */
+        // 开启标注避让，默认为开启，v1.4.15 新增属性
+        // *****开始
+        curData.collision = false
+        // *****结束
+        curData.text = {
+          content: text,
+          direction: "top",
+          offset: [0, 0],
+          style: {
+            fontSize: 13,
+            fontWeight: "normal",
+            fillColor: "#fff",
+            padding: "2, 5",
+            backgroundColor: "rgba(0,0,0,.5)"
+          }
+        };
+        curData.extData = {
+          index: i
+        };
+        var labelMarker = new AMap.LabelMarker(curData);
+        labelMarker.orderno = curData.indexCode;
+        let item = {item:curData,id:null}
+        labelMarker.on("click", e => {
+          if (
+            this.$store.state.selectBtn == "human" ||
+            this.$store.state.selectBtn == "car"
+          ) {
+            this.rankingList(item.item)
+          } else {
+            this.closeTow()
+            this.$nextTick(_ => {this.clickListxs(item)})
+          }
+          if (_that.mapBus.data) {
+            console.log(_that.mapBus);
+            // _that.mapBus.target.click()
+          }
+          let NewIcon = {
+            type: "image",
+            image:
+              "http://a.amap.com/jsapi_demos/static/demo-center/icons/poi-marker-red.png",
+            clipOrigin: [14, 92],
+            clipSize: [50, 68],
+            size: [25, 34],
+            anchor: "bottom-center",
+            angel: 0,
+            retina: true
+          };
+          e.target.setIcon(NewIcon);
+          let marker = new AMap.Marker({
+            icon: new AMap.Icon({
+              image:
+                "http://a.amap.com/jsapi_demos/static/demo-center/icons/poi-marker-red.png",
+              size: new AMap.Size(25, 34), //图标大小
+              imageSize: new AMap.Size(25, 34)
+            }),
+            position: e.data.data.position,
+            offset: new AMap.Pixel(-13, -30),
+            zooms: [15, 20],
+            zIndex: 2000
+          });
+          marker.setMap(_that.map);
+          _that.mapBus = e;
+        });
+        markers.push(labelMarker);
+        this.layer.add(labelMarker);
+      }
+    },
+    //人员相机
+    humanAllAddMarck(LabelsData, type) {
+      let _that = this;
+      if (this.layer) {
+        this.map.remove(this.layer);
+      }
+      this.layer = new AMap.LabelsLayer({
+        zooms: [11, 20],
+        zIndex: 1000,
+        collision: false,
+        animation: true
+      });
+      this.map.add(this.layer);
+      var markers = [];
+      for (var i = 0; i < LabelsData.length; i++) {
+        var curData = LabelsData[i];
+        curData.position = [curData.longitude, curData.latitude];
+        curData.zooms = [15, 20];
+        curData.zIndex = 2000;
+        curData.id = i;
+        curData.icon = {
+          type: "image",
+          image: "https://a.amap.com/jsapi_demos/static/images/poi-marker.png",
+          clipOrigin: [14, 92],
+          clipSize: [50, 68],
+          size: [25, 34],
+          anchor: "bottom-center",
+          angel: 0,
+          retina: true
+        };
+        let text = "";
+        if (curData.alarmCount) {
+          text = curData.name
+            ? curData.name
+            : "" + "" + curData.alarmCount + "件";
+        } else if (curData.num) {
+          text = curData.name ? curData.name : "" + "" + curData.num + "件";
+        } else if (curData.alarmcount) {
+          text = curData.name
+            ? curData.cameraName
+            : "" + "" + curData.alarmcount + "件";
+        }
+        curData.text = {
+          content: text,
+          direction: "top",
+          offset: [0, 0],
+          style: {
+            fontSize: 13,
+            fontWeight: "normal",
+            fillColor: "#fff",
+            padding: "2, 5",
+            backgroundColor: "rgba(0,0,0,.5)"
+          }
+        };
+        curData.extData = {
+          index: i
+        };
+        var labelMarker = new AMap.LabelMarker(curData);
+        labelMarker.indexCode = curData.indexCode;
+        labelMarker.humanId = curData.humanId;
+        labelMarker.alarmCount = curData.alarmCount;
+        labelMarker.on("click", function(e) {
+          if (_that.mapBus.data) {
+            console.log(_that.mapBus);
+          }
+          let obj = {
+            indexCode: e.target.indexCode,
+            humanId: e.target.humanId,
+            name: e.data.data.txt,
+            alarmCount: e.target.alarmCount
+          };
+          _that.$refs.trackCamera.transfe(obj);
+          _that.huamnCamera(obj);
+          _that.mapBus = e;
+        });
+        markers.push(labelMarker);
+        this.layer.add(labelMarker);
+      }
+    },
+    // 轨迹
+    track(data) {
+      if (this.polyline) {
+        this.map.remove(this.polyline);
+      }
+      // 绘制轨迹
+      this.polyline = new AMap.Polyline({
+        map: this.map,
+        path: data,
+        showDir: true,
+        strokeColor: "#28F", //线颜色
+        // strokeOpacity: 1,     //线透明度
+        strokeWeight: 6, //线宽
+        strokeStyle: "dashed" //线样式
+      });
+      // this.map.setFitView();
+    },
+    //    人方法
+    getHumanLists() {
+      let data = allUrl.getHumanList,
+        s = {
+          params: {
+            page: this.HumanListsPage,
+            limit: 20
+          }
+        };
+      Object.assign(data, s); // 合并对象, 只是把参数搞成对象形式 {}
+      this.apix(data)
+        .then(res => {
+          console.log("人方法", res.data);
+          if (this.HumanListsPage == 1) {
+            console.log(res.data);
+            this.$refs.loadingList.initData(res.data, "human");
+            // this.$refs.loadingListTow.initData(res.data,'human')
+          } else if (this.HumanListsPage > 1) {
+            this.$refs.loadingList.cantarData(res.data, "human");
+            clearTimeout(this.Timeout);
+          }
+          this.getBottomFlag = true;
+          this.scroll(this.HumanListsPage);
+        })
+        .catch(err => {
+          console.log(err);
+        });
+    },
+    getHumanMuenLists(type) {
+      // 1 人 2车
+      let data = allUrl.getHumanMuenList,
+        s = {
+          params: {
+            platformId: this.$store.state.platformId,
+            limit: 10
+          }
+        };
+      Object.assign(data, s); // 合并对象, 只是把参数搞成对象形式 {}
+      this.apix(data)
+        .then(res => {
+          console.log(res.data);
+          this.allMuenList = res.data;
+          if (type == 1) {
+            res.data.humanControlTypeVoList.push({
+              controlTypeId: "",
+              name: "全部"
+            });
+            this.rlMuenList = res.data.humanControlTypeVoList;
+          } else if (type == 2) {
+            res.data.vehicleControlTypeVoList.push({
+              controlTypeId: "",
+              name: "全部"
+            });
+            this.rlMuenList = res.data.vehicleControlTypeVoList;
+          }
+        })
+        .catch(err => {
+          console.log(err);
+        });
+    },
+    selectHotLXBtn(item) {
+      let obj = JSON.parse(JSON.stringify(item));
+      this.humanAndCaItems = obj;
+      this.getCountHumanHotAndVehicleHot(obj);
+      this.allFlag.warnings_rightFlag = false;
+      this.allFlag.warnings_rightTowFlag = false;
+      this.allFlag.typeFlag = true;
+      this.allFlag.cameraFlag = false;
+    },
+    getCountHumanHotAndVehicleHot(item) {
+      this.typeCeamreBack();
+      let type = this.$store.state.selectBtn == "human" ? 1 : 2;
+      if (!item.controlTypeId) {
+        type = 1;
+      }
+      let data = allUrl.countHumanHotAndVehicleHot,
+        s = {
+          params: {
+            platformId: this.$store.state.platformId,
+            startAt: this.$store.state.startTime,
+            endAt: this.$store.state.endTime,
+            controlTypeId: item.controlTypeId,
+            queryType: type,
+            /**
+             * @author tanjinfeng
+             * @date 2020-12-02
+             * @description 新增status字段
+             */
+            /*** 新增的代码 ***/
+            status: this.status.join(',')
+            /*** 结束 ***/
+          }
+        };
+      Object.assign(data, s); // 合并对象, 只是把参数搞成对象形式 {}
+      this.apix(data)
+        .then(res => {
+          console.log(res, item);
+          this.typeID = item.controlTypeId;
+          type = this.$store.state.selectBtn == "human" ? 1 : 2;
+          if (type == 1) {
+            this.setHotMap(res.human);
+            this.allAddMarck(res.human, "human");
+            if (this.$refs.rankingListxTow) {
+              this.queryHumanCameraRanks(item);
+            }
+            this.$refs.rankingListx.init(res.human);
+          } else if (type == 2) {
+            this.setHotMap(res.car);
+            this.allAddMarck(res.car, "car");
+            if (this.$refs.rankingListxTow) {
+              this.queryVehicleCameraRanks(item);
+            }
+            this.$refs.rankingListx.init(res.car);
+          }
+        })
+        .catch(err => {
+          console.log(err);
+        });
+    },
+    queryVehicleCameraRanks(item) {
+      this.queryVehicleCameraRanksItem = item;
+      this.typeCeamreBack();
+      let data = allUrl.queryVehicleCameraRank,
+        s = {
+          params: {
+            platformId: this.$store.state.platformId,
+            startAt: this.$store.state.startTime,
+            endAt: this.$store.state.endTime,
+            controlTypeId: item.controlTypeId,
+            token: this.$store.state.token,
+            limit: 10000,
+            /**
+             * @author tanjinfeng
+             * @date 2020-12-02
+             * @description 新增status字段
+             */
+            /*** 新增的代码 ***/
+            status: this.status.join(',')
+            /*** 结束 ***/
+          }
+        };
+      Object.assign(data, s); // 合并对象, 只是把参数搞成对象形式 {}
+      this.apix(data)
+        .then(res => {
+          console.log(res.data);
+          res.data.forEach(ele => {
+            ele.alarmcount = ele.num;
+            ele.cameraName = ele.cameraName ? ele.cameraName : ele.name;
+          });
+          if (this.$refs.HeaderInformation && this.$refs.rankingListxTow) {
+            this.$refs.HeaderInformation.init(res.data);
+            this.$refs.rankingListxTow.init(res.data);
+          }
+        })
+        .catch(err => {
+          console.log(err);
+        });
+    },
+    queryHumanCameraRanks(item) {
+      this.typeCeamreBack();
+      let data = allUrl.queryHumanCameraRank,
+        s = {
+          params: {
+            platformId: this.$store.state.platformId,
+            startAt: this.$store.state.startTime,
+            endAt: this.$store.state.endTime,
+            controlTypeId: item.controlTypeId,
+            token: this.$store.state.token,
+            limit: 10000,
+            /**
+             * @author tanjinfeng
+             * @date 2020-12-02
+             * @description 新增status字段
+             */
+            /*** 新增的代码 ***/
+            status: this.status.join(',')
+            /*** 结束 ***/
+          }
+        };
+      Object.assign(data, s); // 合并对象, 只是把参数搞成对象形式 {}
+      this.apix(data)
+        .then(res => {
+          console.log(res.data, this.$refs.HeaderInformation);
+          res.data.forEach(ele => {
+            ele.alarmcount = ele.num;
+            ele.cameraName = ele.name;
+          });
+          this.$refs.HeaderInformation.init(res.data);
+          this.$refs.rankingListxTow.init(res.data);
+        })
+        .catch(err => {
+          console.log(err);
+        });
+    },
+    getHotIndexFive(type) {
+      let data = allUrl.getAlarmHumanCountGroupByType,
+        s = {
+          params: {
+            startTime: this.$store.state.startTime,
+            endTime: this.$store.state.endTime
+          }
+        };
+      Object.assign(data, s); // 合并对象, 只是把参数搞成对象形式 {}
+      this.apix(data)
+        .then(res => {
+          this.humanAndCarAllData = [];
+          this.criSwperAll = [];
+          this.fragmentData = [];
+          this.criIndex = 0;
+          let ind = 0;
+          let arr = [];
+          for (let key in res.data) {
+            console.log(key, res.data[key]);
+            let obj = {
+              name: key,
+              data: res.data[key]
+            };
+            arr.push(obj);
+          }
+          let num = Math.ceil(arr.length / 2);
+          for (let i = 0; i < num; i++) {
+            this.humanAndCarAllData[i] = arr.slice(ind, (ind += 2));
+            if (i != 0) {
+              this.criSwperAll.push({ flag: false });
+            } else {
+              this.criSwperAll.push({ flag: true });
+            }
+          }
+          this.fragmentData = this.humanAndCarAllData[0];
+        })
+        .catch(err => {
+          console.log(err);
+        });
+    },
+    getHumanAlarmTop() {
+      let data = allUrl.getHumanAlarmTop,
+        s = {
+          params: {
+            startTime: this.$store.state.startTime,
+            endTime: this.$store.state.endTime
+          }
+        };
+      Object.assign(data, s); // 合并对象, 只是把参数搞成对象形式 {}
+      this.apix(data)
+        .then(res => {})
+        .catch(err => {
+          console.log(err);
+        });
+    },
+    humanFiveTopSelect(item) {
+      this.humanId = item.humanId;
+      const _that = this;
+      let data = allUrl.getHumanAlarmList,
+        s = {
+          params: {
+            humanId: item.humanId,
+            cameraName: "",
+            page: this.humanFiveTopSelectPage,
+            limit: 15
+          }
+        };
+      Object.assign(data, s); // 合并对象, 只是把参数搞成对象形式 {}
+      this.apix(data)
+        .then(res => {
+          console.log(res);
+          if (this.humanFiveTopSelectPage == 1) {
+            this.clickEle = "human";
+            this.allFlag.warnings_rightFlag = false;
+            this.allFlag.warnings_rightTowFlag = true;
+            this.allFlag.typeFlag = false;
+            this.allFlag.cameraFlag = false;
+            this.allPhotograph = res.page.total;
+            this.humanEntity = res.humanEntity;
+            this.cameraNum = res.camera.length;
+            let arrAy = [];
+            res.page.records.forEach(ele => {
+              if (ele.latitude && ele.longitude) {
+                arrAy.push([
+                  ele.riskCameraEntity.longitude,
+                  ele.riskCameraEntity.latitude
+                ]);
+              }
+            });
+            let hotArray = [];
+            res.camera.forEach(ele => {
+              ele.humanId = res.humanEntity.humanId;
+              let obj = "";
+              if (ele.latitude && ele.longitude) {
+                obj = {
+                  count: ele.alarmCount,
+                  lat: ele.latitude,
+                  lng: ele.longitude
+                };
+              }
+              hotArray.push(obj);
+            });
+            this.setHotMap(hotArray);
+            this.humanAllAddMarck(res.camera, "human");
+            this.track(arrAy);
+            setTimeout(() => {
+              _that.$refs.trackCamera.init(res.page.records, res.camera);
+            });
+          } else {
+            setTimeout(() => {
+              if (res.page.records.length != 0) {
+                _that.$refs.trackCamera.initConnect(res.page.records);
+              }
+            });
+          }
+        })
+        .catch(err => {
+          console.log(err);
+        });
+    },
+    huamnCamera(item) {
+      this.clickEle = "Camera";
+      this.huamnCameraItem = item;
+      const _that = this;
+      let obj = {
+        page: this.huamnCameraPage,
+        limit: 15,
+        indexCode: item.indexCode
+      };
+      if (this.$store.state.selectBtn == "human") {
+        obj.humanId = item.humanId;
+      } else if (this.$store.state.selectBtn == "car") {
+        obj.plateInfo = item.plateInfo;
+      }
+      let data = allUrl.getHumanAlarmList,
+        s = { params: obj };
+      Object.assign(data, s); // 合并对象, 只是把参数搞成对象形式 {}
+      console.log(data);
+      this.apix(data)
+        .then(res => {
+          console.log(res);
+          if (this.huamnCameraPage == 1) {
+            setTimeout(() => {
+              _that.$refs.trackCamera.init(res.page.records, res.camera);
+            });
+          } else {
+            setTimeout(() => {
+              _that.$refs.trackCamera.initConnect(res.page.records);
+            });
+          }
+        })
+        .catch(err => {
+          console.log(err);
+        });
+    },
+    /*车*/
+    getCarvehicleRankList(type) {
+      //2.货车 3.违检车
+      let data = allUrl.vehicleRankList,
+        s = {
+          params: {
+            startTime: this.$store.state.startTime,
+            endTime: this.$store.state.endTime,
+            limit: 5,
+            page: 1
+          }
+        };
+      Object.assign(data, s); // 合并对象, 只是把参数搞成对象形式 {}
+      this.apix(data)
+        .then(res => {
+          // console.log(res)
+          this.humanAndCarAllData = [];
+          this.criSwperAll = [];
+          this.fragmentData = [];
+          this.criIndex = 0;
+          let ind = 0;
+          let arr = [];
+          for (let key in res.vehicleRankList) {
+            console.log(key, res.vehicleRankList[key]);
+            let obj = {
+              name: key,
+              data: res.vehicleRankList[key]
+            };
+            arr.push(obj);
+          }
+          let num = Math.ceil(arr.length / 2);
+          for (let i = 0; i < num; i++) {
+            this.humanAndCarAllData[i] = arr.slice(ind, (ind += 2));
+            if (i != 0) {
+              this.criSwperAll.push({ flag: false });
+            } else {
+              this.criSwperAll.push({ flag: true });
+            }
+          }
+          this.fragmentData = this.humanAndCarAllData[0];
+          console.log(
+            this.fragmentData,
+            this.humanAndCarAllData,
+            "///车的前五"
+          );
+        })
+        .catch(err => {
+          console.log(err);
+        });
+    },
+    getvehicleAlarmTops() {
+      let data = allUrl.getgetvehicleAlarmTop,
+        s = {
+          params: {
+            startTime: this.$store.state.startTime,
+            endTime: this.$store.state.endTime
+          }
+        };
+      Object.assign(data, s); // 合并对象, 只是把参数搞成对象形式 {}
+      this.apix(data)
+        .then(res => {
+          console.log(res.data, "///车相机的前五");
+        })
+        .catch(err => {
+          console.log(err);
+        });
+    },
+    ifSelectBtn() {
+      console.log(this.$store.state.selectBtn);
+      if (this.$store.state.selectBtn == "human") {
+        this.getHumanAlarmTop();
+        this.getHumanMuenLists(1);
+        this.getHumanLists();
+        this.getHotIndexFive(0);
+        this.getHotIndexFive(1);
+        this.HumanListsPage = 1;
+        this.getCountHumanHotAndVehicleHot({ controlTypeId: "" });
+      } else if (this.$store.state.selectBtn == "car") {
+        this.getvehicleAlarmTops();
+        this.getHumanMuenLists(2);
+        this.getriskvehiclealarm();
+        this.HumanListsPage = 1;
+        this.getCarvehicleRankList();
+        this.getCountHumanHotAndVehicleHot({ controlTypeId: "" });
+      } else if (this.$store.state.selectBtn == "school") {
+        this.estate(6);
+        this.eventTypeTreeStatistics(6);
+        this.eventHandleScales(6);
+        this.listEventOrderByConditionss(6);
+        this.getSchoolEstateBtn(6);
+        this.selectGdblSchoolAndCompanyWorkLists();
+        this.waterBall();
+      } else if (this.$store.state.selectBtn == "estate") {
+        this.estate(5);
+        this.eventTypeTreeStatistics(5);
+        this.eventHandleScales(5);
+        this.listEventOrderByConditionss(5);
+        this.getSchoolEstateBtn(5);
+        this.selectGdblSchoolAndCompanyWorkLists();
+        this.waterBall();
+      }
+      this.allFlag.warnings_rightFlag = true;
+      this.allFlag.warnings_rightTowFlag = false;
+      this.allFlag.typeFlag = false;
+      this.allFlag.cameraFlag = false;
+      this.humanFiveTopSelectPage = 1;
+      this.allFlag.schoolEacstFlag = false;
+      if (this.layer) {
+        this.map.remove(this.layer);
+      }
+      if (this.humanjsMap) {
+        this.humanjsMap.setMap(null); // 清除地图覆盖物
+      }
+    },
+    getriskvehiclealarm() {
+      let data = allUrl.riskvehiclealarm,
+        s = {
+          params: {
+            page: this.HumanListsPage,
+            limit: 20,
+            platformId: this.$store.state.platformId,
+            token: this.$store.state.token
+          }
+        };
+      Object.assign(data, s); // 合并对象, 只是把参数搞成对象形式 {}
+      this.apix(data)
+        .then(res => {
+          console.log(res.page.records, "///车的列表");
+          if (this.HumanListsPage == 1) {
+            this.ifCarType(res.page.records);
+            this.$refs.loadingList.initData(res.page.records, "car");
+          } else if (this.HumanListsPage > 1) {
+            this.ifCarType(res.page.records);
+            this.$refs.loadingList.cantarData(res.page.records, "car");
+            clearTimeout(this.Timeout);
+          }
+          this.getBottomFlag = true;
+          this.scroll(this.HumanListsPage);
+        })
+        .catch(err => {
+          console.log(err);
+        });
+    },
+    ifCarType(data) {
+      data.forEach(function(ele, index) {
+        let userTypeName = "";
+        switch (ele.type) {
+          case 0:
+            userTypeName = "其他车型";
+            break;
+          case 1:
+            userTypeName = "客车";
+            break;
+          case 2:
+            userTypeName = "货车";
+            break;
+          case 3:
+            userTypeName = "轿车";
+            break;
+          case 4:
+            userTypeName = "面包车";
+            break;
+          case 5:
+            userTypeName = "小货车";
+            break;
+          case 6:
+            userTypeName = "行人";
+            break;
+          case 7:
+            userTypeName = "二轮车";
+            break;
+          case 8:
+            userTypeName = "三轮车";
+            break;
+          case 9:
+            userTypeName = "SUV/MPV";
+            break;
+          case 10:
+            userTypeName = "中型客车";
+        }
+        ele.userTypeName = userTypeName;
+      });
+    },
+    carFiveTopSelect(item) {
+      this.humanId = item.plateInfo;
+      const _that = this;
+      this.clickEle = "car";
+      console.log(item);
+      this.plateInfo = item.plateInfo;
+      let data = allUrl.riskvehiclealarm,
+        s = {
+          params: {
+            carNum: item.plateInfo,
+            page: this.carFiveTopSelectPage,
+            cameraName: "",
+            limit: 20,
+            platformId: this.$store.state.platformId
+          }
+        };
+      Object.assign(data, s); // 合并对象, 只是把参数搞成对象形式 {}
+      this.apix(data)
+        .then(res => {
+          if (this.carFiveTopSelectPage == 1) {
+            res.page.records.forEach(ele => {
+              ele.bkgPicUrl = ele.picAbbreviate;
+              ele.bkgPicMinUrl = ele.picAbbreviateMin;
+            });
+            setTimeout(() => {
+              _that.$refs.trackCamera.init(res.page.records, res.cameras);
+            });
+            this.allPhotograph = res.page.total;
+            this.allFlag.warnings_rightFlag = false;
+            this.allFlag.warnings_rightTowFlag = true;
+            this.allFlag.typeFlag = false;
+            this.allFlag.cameraFlag = false;
+            let hotArray = [];
+            res.cameras.forEach(ele => {
+              ele.plateInfo = item.plateInfo;
+              if (ele.latitude && ele.longitude) {
+                let obj = {
+                  count: ele.alarmCount,
+                  lat: ele.latitude,
+                  lng: ele.longitude
+                };
+                hotArray.push(obj);
+              }
+            });
+            this.humanAllAddMarck(res.cameras, "car");
+            this.setHotMap(hotArray);
+          } else {
+            setTimeout(() => {
+              if (res.page.records.length != 0) {
+                res.page.records.forEach(ele => {
+                  ele.bkgPicUrl = ele.picAbbreviate;
+                  ele.bkgPicMinUrl = ele.picAbbreviateMin;
+                });
+                _that.$refs.trackCamera.initConnect(res.page.records);
+              }
+            });
+          }
+        })
+        .catch(err => {
+          console.log(err);
+        });
+    },
+    pull_down() {
+      if (this.pull_downFlag) {
+        this.pull_downFlag = false;
+      } else {
+        this.pull_downFlag = true;
+      }
+      let dataList_wrap = document.getElementsByClassName("dataList_wrap")[0];
+      let dataList_title = document.getElementsByClassName("dataList_title")[0];
+      setTimeout(() => {
+        console.log(dataList_wrap.offsetHeight, dataList_title.offsetHeight);
+        let heights = 868 - 282 + 28 - Number(dataList_wrap.offsetHeight);
+        dataList_title.style.height = heights + "px";
+        console.log(
+          heights,
+          dataList_wrap.offsetHeight,
+          dataList_title.offsetHeight
+        );
+      }, 10);
+    },
+    //小区和校园的公用方法
+    estate(val) {
+      let data = allUrl.eventTypeStatistic,
+        s = {
+          params: {
+            platformId: this.$store.state.platformId,
+            token: this.$store.state.token,
+            platformTypeId: val, // 6是学校 5是小区
+            startTime: this.$store.state.startTime,
+            endTime: this.$store.state.endTime
+          }
+        };
+      Object.assign(data, s); // 合并对象, 只是把参数搞成对象形式 {}
+      this.apix(data)
+        .then(res => {
+          let title = "";
+          if (val == 6) {
+            title = "校园隐患类型排行";
+          } else {
+            title = "类型排行榜";
+          }
+          this.$refs.schoolTopTow.init(res.list, title);
+        })
+        .catch(err => {
+          console.log(err);
+        });
+    },
+    eventTypeTreeStatistics(val) {
+      let obj = {
+        startTime: this.$store.state.startTime,
+        endTime: this.$store.state.endTime,
+        platformTypeId: this.$store.state.selectBtn == "school" ? 6 : 5
+      };
+      let data = allUrl.selectGdblSchoolAndCompanyWorkList,
+        s = { params: obj };
+      Object.assign(data, s); // 合并对象, 只是把参数搞成对象形式 {}
+      this.apix(data)
+        .then(res => {
+          console.log(res);
+          let title = "";
+          if (val == 6) {
+            title = "校园隐患排行";
+          } else {
+            title = "区域排行榜";
+          }
+          res.data.value.forEach(ele => {
+            ele.typeName = ele.platformName;
+            ele.count = ele.alarmCount;
+          });
+          this.$refs.schoolTop.init(res.data.value, title);
+        })
+        .catch(err => {
+          console.log(err);
+        });
+    },
+    eventHandleScales(val) {
+      let data = allUrl.selectGdblSchoolAndCompany,
+        s = {
+          params: {
+            platformTypeId: val, // 6是学校 5是小区
+            startTime: this.$store.state.startTime,
+            endTime: this.$store.state.endTime
+          }
+        };
+      Object.assign(data, s); // 合并对象, 只是把参数搞成对象形式 {}
+      this.apix(data)
+        .then(res => {
+          let title = "";
+          if (val == 6) {
+            title = "校园隐患占比";
+          } else {
+            title = "类型占比";
+          }
+          console.log(res.data);
+          this.$refs.chart.init(res.data, title);
+        })
+        .catch(err => {
+          console.log(err);
+        });
+    },
+    listEventOrderByConditionss(val) {
+      let data = allUrl.listEventOrderByConditions,
+        s = {
+          params: {
+            platformTypeId: val, // 6是学校 5是小区
+            startTime: this.$store.state.startTime,
+            endTime: this.$store.state.endTime
+          }
+        };
+      Object.assign(data, s); // 合并对象, 只是把参数搞成对象形式 {}
+      this.apix(data)
+        .then(res => {
+          console.log(res);
+          // this.$refs.chart.init(res.data)
+        })
+        .catch(err => {
+          console.log(err);
+        });
+    },
+    getSchoolEstateHot(item) {
+      this.schoolAndEstateItem = item
+      console.log(item);
+      this.allFlag.schoolEacstFlag = false;
+      this.waterBall(item);
+      this.selectGdblSchoolAndCompanyWorkLists(item);
+    },
+    getSchoolEstateBtn(type) {
+      let data = allUrl.selectGdblSchoolAndCompany,
+        s = {
+          params: {
+            platformTypeId: type, // 6是学校 5是小区
+            startTime: this.$store.state.startTime,
+            endTime: this.$store.state.endTime
+          }
+        };
+      Object.assign(data, s); // 合并对象, 只是把参数搞成对象形式 {}
+      this.apix(data)
+        .then(res => {
+          console.log(res.data);
+          res.data.push({ name: "全部", id: "", value: "" });
+          this.rlMuenList = res.data;
+        })
+        .catch(err => {
+          console.log(err);
+        });
+    },
+    backVis(item) {
+      this.backBtn = true;
+      let obj = {
+        indexCode: item.indexCode
+      };
+      if (this.$store.state.selectBtn == "human") {
+        obj.humanId = item.humanId;
+      } else if (this.$store.state.selectBtn == "car") {
+        obj.plateInfo = item.plateInfo;
+      }
+      this.huamnCameraPage = 1;
+      this.huamnCamera(obj);
+    },
+    backs() {
+      this.$refs.trackCamera.back();
+      this.backBtn = false;
+      if (this.$store.state.selectBtn == "human") {
+        this.humanFiveTopSelect({ humanId: this.humanId });
+      } else if (this.$store.state.selectBtn == "car") {
+        this.carFiveTopSelect({ plateInfo: this.humanId });
+      }
+    },
+    typeCeamreBack(data = true) {
+      if (data) {
+        this.humanFiveTopSelectPage = 1;
+        this.allFlag.typeCeamreFlag = false;
+      } else {
+        if (
+          this.$store.state.selectBtn == "human" ||
+          this.$store.state.selectBtn == "car"
+        ) {
+          if (this.humanAndCaItems) {
+            this.selectHotLXBtn(this.humanAndCaItems);
+          }
+        }
+      }
+    },
+    closeOne() {
+      this.allFlag.warnings_rightFlag = true;
+      this.allFlag.warnings_rightTowFlag = false;
+      this.allFlag.typeFlag = false;
+      this.allFlag.cameraFlag = false;
+      this.humanFiveTopSelectPage = 1;
+      this.carFiveTopSelectPage = 1;
+      this.huamnCameraPage = 1;
+      this.ifSelectBtn();
+    },
+    FlowBallLeftSchool() {
+      let ele = this.$refs.FlowBallTransSchool;
+      let eleLeft = parseInt(ele.style.marginLeft);
+      let eleWidth = parseInt(ele.offsetWidth);
+      if (Math.abs(eleLeft) + 330 < eleWidth - 123) {
+        ele.style.marginLeft = (Math.abs(eleLeft) + 123) * -1 + "px";
+      }
+    },
+    FlowBallRightSchool() {
+      let ele = this.$refs.FlowBallTransSchool;
+      let eleLeft = parseInt(ele.style.marginLeft);
+      let eleWidth = parseInt(ele.offsetWidth);
+      if (Math.abs(eleLeft) > 20) {
+        ele.style.marginLeft = (Math.abs(eleLeft) - 123) * -1 + "px";
+      }
+    },
+    FlowBallLeftEstate() {
+      let ele = this.$refs.FlowBallTransEstate;
+      let eleLeft = parseInt(ele.style.marginLeft);
+      let eleWidth = parseInt(ele.offsetWidth);
+      if (Math.abs(eleLeft) + 330 < eleWidth - 123) {
+        ele.style.marginLeft = (Math.abs(eleLeft) + 123) * -1 + "px";
+      }
+    },
+    FlowBallRightEstate() {
+      let ele = this.$refs.FlowBallTransEstate;
+      let eleLeft = parseInt(ele.style.marginLeft);
+      let eleWidth = parseInt(ele.offsetWidth);
+      if (Math.abs(eleLeft) > 20) {
+        ele.style.marginLeft = (Math.abs(eleLeft) - 123) * -1 + "px";
+      }
+    },
+    //    点击相机
+    humanRankingList(item) {
+      let data = allUrl.queryHumanCameraDetailList,
+        s = {
+          params: {
+            indexCode: item.index_code,
+            startTime: this.$store.state.startTime,
+            endTime: this.$store.state.endTime
+          }
+        };
+      Object.assign(data, s); // 合并对象, 只是把参数搞成对象形式 {}
+      this.apix(data)
+        .then(res => {
+          console.log(item);
+          this.humanCameraData = res.data2;
+          let num = 0;
+          res.data2.forEach(ele => {
+            num += ele.alarmCount;
+          });
+          this.humanCameraAllNumData = (num + "").padStart(5, "0");
+          console.log(num);
+        })
+        .catch(err => {
+          console.log(err);
+        });
+    },
+    humanRankingListPage(item) {
+      this.humanRankingListPageItem = item;
+      let data = allUrl.queryHumanCameraDetailListPage,
+        s = {
+          params: {
+            indexCode: this.rankingListIndexData.index_code,
+            startTime: this.$store.state.startTime,
+            endTime: this.$store.state.endTime,
+            page: this.humanRankingListPagexs,
+            limit: 15,
+            controlTypeId: item.controlTypeId
+          }
+        };
+      Object.assign(data, s); // 合并对象, 只是把参数搞成对象形式 {}
+      this.apix(data)
+        .then(res => {
+          console.log(res.data);
+          if (this.humanRankingListPagexs == 1) {
+            this.$refs.timeliness.inits(
+              res.data,
+              "Camera",
+              this.humanRankingListPagexs
+            );
+          } else {
+            this.$refs.timeliness.initConnects(
+              res.data,
+              "Camera",
+              this.humanRankingListPagexs
+            );
+          }
+        })
+        .catch(err => {
+          console.log(err);
+        });
+    },
+    humanRankingListPages(item) {
+      this.humanRankingListPagespoItem = item;
+      let data = allUrl.queryHumanCameraDetailListPage,
+        s = {
+          params: {
+            indexCode: item.indexCode,
+            startTime: this.$store.state.startTime,
+            endTime: this.$store.state.endTime,
+            page: this.humanRankingListPagespo,
+            limit: 15,
+            controlTypeId: item.controlTypeId
+          }
+        };
+      Object.assign(data, s); // 合并对象, 只是把参数搞成对象形式 {}
+      this.apix(data)
+        .then(res => {
+          console.log(res.data);
+          if (this.humanRankingListPagespo == 1) {
+            this.$refs.timelineTow.inits(
+              res.data,
+              "Cameras",
+              this.humanRankingListPagespo
+            );
+          } else {
+            this.$refs.timelineTow.initConnects(
+              res.data,
+              "Cameras",
+              this.humanRankingListPagespo
+            );
+          }
+        })
+        .catch(err => {
+          console.log(err);
+        });
+    },
+    carRankingList(item) {
+      let data = allUrl.queryVehicleCameraDetailList,
+        s = {
+          params: {
+            crossingId: item.crossing_id,
+            startTime: this.$store.state.startTime,
+            endTime: this.$store.state.endTime
+          }
+        };
+      Object.assign(data, s); // 合并对象, 只是把参数搞成对象形式 {}
+      this.apix(data)
+        .then(res => {
+          console.log(item);
+          this.humanCameraData = res.alarmVos;
+          let num = 0;
+          res.alarmVos.forEach(ele => {
+            num += ele.alarmCount;
+          });
+          this.humanCameraAllNumData = (num + "").padStart(5, "0");
+          console.log(num);
+        })
+        .catch(err => {
+          console.log(err);
+        });
+    },
+    carRankingListPage(item) {
+      this.carRankingListPagesItem = item;
+      let data = allUrl.queryVehicleCameraDetailListPage,
+        s = {
+          params: {
+            crossingId: this.carkingListIndexData.crossing_id,
+            startTime: this.$store.state.startTime,
+            endTime: this.$store.state.endTime,
+            controlTypeId: item.controlTypeId,
+            limit: 15,
+            page: this.carRankingListPagesx
+          }
+        };
+      Object.assign(data, s); // 合并对象, 只是把参数搞成对象形式 {}
+      this.apix(data)
+        .then(res => {
+          console.log(res);
+          res.data.forEach(ele => {
+            ele.bkgPicUrl = ele.picAbbreviate;
+            ele.bkgPicMinUrl = ele.picAbbreviateMin;
+          });
+          if (this.carRankingListPagesx == 1) {
+            this.$refs.timeliness.inits(
+              res.data,
+              "Camera",
+              this.carRankingListPagesx
+            );
+          } else {
+            this.$refs.timeliness.initConnects(
+              res.data,
+              "Camera",
+              this.carRankingListPagesx
+            );
+          }
+        })
+        .catch(err => {
+          console.log(err);
+        });
+    },
+    carRankingListPages(item) {
+      this.carRankingListPagespoItem = item;
+      let data = allUrl.queryVehicleCameraDetailList,
+        s = {
+          params: {
+            crossingId: item.crossingId,
+            startTime: this.$store.state.startTime,
+            endTime: this.$store.state.endTime,
+            controlTypeId: item.controlTypeId,
+            limit: 15,
+            page: this.carRankingListPagespo
+          }
+        };
+      Object.assign(data, s); // 合并对象, 只是把参数搞成对象形式 {}
+      this.apix(data)
+        .then(res => {
+          console.log(res);
+          res.vehicleAlarmList.forEach(ele => {
+            ele.bkgPicUrl = ele.picAbbreviate;
+            ele.bkgPicMinUrl = ele.picAbbreviateMin;
+          });
+          if (this.carRankingListPagespo == 1) {
+            this.$refs.timelineTow.inits(
+              res.vehicleAlarmList,
+              "Cameras",
+              this.carRankingListPagespo
+            );
+          } else {
+            this.$refs.timelineTow.initConnects(
+              res.vehicleAlarmList,
+              "Cameras",
+              this.carRankingListPagespo
+            );
+          }
+        })
+        .catch(err => {
+          console.log(err);
+        });
+    },
+    rankingList(item) {
+      if (item.lng) {
+        this.map.panTo(new AMap.LngLat(item.lng, item.lat))
+        this.map.setZoom(15)
+      }
+      console.log(item);
+      this.humanRankingListPagexs = 1;
+      this.carRankingListPagesx = 1;
+      if (this.$store.state.selectBtn == "human") {
+        this.rankingListIndexData = item;
+        this.humanRankingList(item);
+        this.humanRankingListPage(item);
+      } else if (this.$store.state.selectBtn == "car") {
+        this.carkingListIndexData = item;
+        this.carRankingList(item);
+        this.carRankingListPage(item);
+      }
+      this.allFlag.warnings_rightFlag = false;
+      this.allFlag.warnings_rightTowFlag = false;
+      this.allFlag.typeFlag = false;
+      this.allFlag.cameraFlag = true;
+    },
+    typeClick(item) {
+      this.typeCilckStr = item.typeName;
+      this.allFlag.typeClickFlag = true;
+      console.log(item);
+      this.carRankingListPagesx = 1;
+      this.humanRankingListPagexs = 1;
+      if (this.$store.state.selectBtn == "human") {
+        this.humanRankingListPage(item);
+      } else if (this.$store.state.selectBtn == "car") {
+        this.carRankingListPage(item);
+      }
+      if (item.latitude && item.longitude) {
+        let obj = {
+          count: Number(item.alarmcount),
+          lat: item.latitude,
+          lng: item.longitude
+        };
+        this.setHotMap(obj);
+        this.humanAllAddMarck(item, "human");
+      }
+    },
+    typeClickBack() {
+      if (this.$store.state.selectBtn == "human") {
+        this.humanRankingListPage({
+          indexCode: this.rankingListIndexData.indexCode
+        });
+      } else if (this.$store.state.selectBtn == "car") {
+        this.carRankingListPage({
+          crossingId: this.carkingListIndexData.crossingId
+        });
+      }
+      this.allFlag.typeClickFlag = false;
+    },
+    rankingListxTows(item) {
+      this.typeData = item;
+      console.log(this.typeData);
+      if (this.$store.state.selectBtn == "human") {
+        let obj = {
+          controlTypeId: this.typeID,
+          indexCode: item.indexCode
+        };
+        this.humanRankingListPagespo = 1;
+        this.humanRankingListPages(obj);
+        this.allFlag.typeCeamreFlag = true;
+      } else if (this.$store.state.selectBtn == "car") {
+        let obj = {
+          crossingId: item.crossing_id,
+          controlTypeId: item.controlTypeId
+        };
+        this.carRankingListPages(obj);
+        this.allFlag.typeCeamreFlag = true;
+      }
+    },
+    clickListx(item) {
+      console.log("点击列表点击列表点击列表点击列表", item);
+      if (item.item.controlTypeId) {
+        item.item.id = item.item.controlTypeId;
+        item.id = item.item.controlTypeId;
+      } else {
+        item.item.id = item.id;
+      }
+      //item.item.id = item.item.controlTypeId
+      this.waterBall(item.item, false);
+      this.clickListxItem = item;
+      let data = allUrl.selectGdblSchoolAndCompanyWork,
+        s = {
+          params: {
+            startTime: this.$store.state.startTime,
+            endTime: this.$store.state.endTime,
+            type: this.clickListxItem.id ? this.clickListxItem.id : "",
+            page: this.clickListxPage,
+            limit: 15,
+            platformTypeId: this.$store.state.selectBtn == "school" ? 6 : 5,
+            platformId: this.clickListxItem.item.platformId
+          }
+        };
+      Object.assign(data, s); // 合并对象, 只是把参数搞成对象形式 {}
+      this.apix(data)
+        .then(res => {
+          console.log("合并对象", res);
+          if (this.$store.state.selectBtn == "school") {
+            this.$refs.schoolTopNum.initNum(res.data.allCount);
+          } else if (this.$store.state.selectBtn == "estate") {
+            this.$refs.schoolTopNumTow.initNum(res.data.allCount);
+          }
+          let zx = res.data.eventInfoEntities[0];
+          if (zx.platformLongitude != null) {
+            // this.addMarck(
+            //   zx.platformLongitude,
+            //   zx.platformLatitude,
+            //   "//a.amap.com/jsapi_demos/static/demo-center/icons/poi-marker-default.png"
+            // );
+            this.map.setZoomAndCenter(20, [
+              zx.platformLongitude,
+              zx.platformLatitude
+            ]);
+          } else {
+            //由于数据问题，平台经纬度可能为空
+            if (zx.longitude != null) {
+              // this.addMarck(
+              //   zx.longitude,
+              //   zx.latitude,
+              //   "//a.amap.com/jsapi_demos/static/demo-center/icons/poi-marker-default.png"
+              // );
+              this.map.setZoomAndCenter(20, [zx.longitude, zx.latitude]);
+            }
+          }
+
+          if (this.clickListxPage == 1) {
+            this.$refs.loadingListTow.initData(
+              res.data.eventInfoEntities,
+              "school"
+            );
+            this.scroll(this.clickListxPage);
+          } else {
+            this.$refs.loadingListTow.cantarData(
+              res.data.eventInfoEntities,
+              "school"
+            );
+          }
+          this.getBottomFlag = true;
+        })
+        .catch(err => {
+          console.log(err);
+        });
+      this.allFlag.schoolEacstFlag = true;
+    },
+    clickListxs(item) {
+      if (this.$refs.RankingLists) {
+        this.clickListxPage = 1;
+        this.clickListx(item);
+      }
+    },
+    clickSchoolTops(item) {
+      // console.log(item)
+      this.clickListxPage = 1;
+      this.clickListx({ item, id: "" });
+    },
+    closeTow() {
+      this.allFlag.schoolEacstFlag = false;
+      this.selectGdblSchoolAndCompanyWorkLists();
+      this.waterBall();
+    },
+    // 点击获取小区和学校的类型隐患列表数据
+    selectGdblSchoolAndCompanyWorkLists(item = "") {
+      console.log("点击获取小区和学校的类型隐患列表数据", item);
+      let obj = "";
+      if (item.id) {
+        obj = {
+          startTime: this.$store.state.startTime,
+          endTime: this.$store.state.endTime,
+          type: item.id ? item.id : "",
+          /**
+           * @author tanjinfeng
+           * @date 2020-12-02
+           * @description 新增status字段
+           */
+          /*** 新增的代码 ***/
+          status: this.status.join(',')
+          /*** 结束 ***/
+        };
+      } else if (!item.id) {
+        obj = {
+          startTime: this.$store.state.startTime,
+          endTime: this.$store.state.endTime,
+          platformTypeId: this.$store.state.selectBtn == "school" ? 6 : 5,
+          /**
+           * @author tanjinfeng
+           * @date 2020-12-02
+           * @description 新增status字段
+           */
+          /*** 新增的代码 ***/
+          status: this.status.join(',')
+          /*** 结束 ***/
+        };
+      }
+      let data = allUrl.selectGdblSchoolAndCompanyWorkList,
+        s = { params: obj };
+      Object.assign(data, s); // 合并对象, 只是把参数搞成对象形式 {}
+      this.apix(data)
+        .then(res => {
+          if (this.$refs.RankingLists) {
+            this.$refs.RankingLists.init(res.data.value, res.data.id);
+          }
+          let num = 0;
+          res.data.value.forEach(ele => {
+            num += ele.alarmCount;
+            ele.lat = ele.latitude;
+            ele.lng = ele.longitude;
+          });
+          this.allAddMarck(res.data.value, "school");
+          this.setHotMap(res.data.value);
+        })
+        .catch(err => {
+          console.log(err);
+        });
+    },
+    // 获取水波球的数据
+    waterBall(item = {}, flag = true) {
+      let obj = {
+        startTime: this.$store.state.startTime,
+        endTime: this.$store.state.endTime,
+        type: item.id ? item.id : "",
+        platformTypeId: this.$store.state.selectBtn == "school" ? 6 : 5,
+        platformId: item.platformId,
+        /**
+         * @author tanjinfeng
+         * @date 2020-12-02
+         * @description 新增status字段
+         */
+        /*** 新增的代码 ***/
+        status: this.status.join(',')
+        /*** 结束 ***/
+      };
+      let data = allUrl.WaterBall,
+        s = { params: obj };
+      Object.assign(data, s); // 合并对象, 只是把参数搞成对象形式 {}
+      this.apix(data)
+        .then(res => {
+          console.log(res.data);
+          let allCountNum = 0;
+          let deCountNum = 0;
+          let percentage = 0;
+          if (res.data) {
+            res.data.forEach(ele => {
+              allCountNum += ele.allCount;
+              deCountNum += ele.deCount;
+            });
+            if (deCountNum && allCountNum) {
+              percentage = parseInt((deCountNum / allCountNum) * 100);
+            }
+          }
+          if (this.$store.state.selectBtn == "school") {
+            this.$refs.cs.init(res.data);
+          } else if (this.$store.state.selectBtn == "estate") {
+            this.$refs.csTow.init(res.data);
+            this.$refs.schoolTopNumTow.initPercentage([
+              deCountNum,
+              percentage + "%"
+            ]);
+          }
+          if (flag) {
+            console.log(allCountNum);
+            if (this.$store.state.selectBtn == "school") {
+              this.$refs.schoolTopNum.initNum(allCountNum);
+            } else {
+              this.$refs.schoolTopNumTow.initNum(allCountNum);
+            }
+          }
+        })
+        .catch(err => {
+          console.log(err);
+        });
+    },
+    //    点击新增区域
+    addAreas() {
+      this.$refs.addAreax.addMarcker(this.map);
+    }
+  },
+  mounted() {
+    this.ifSelectBtn();
+    this.mapLoning();
+    // 人的方法
+    this.setPlaceholder();
+    bus.$off("Researchers");
+    bus.$on("Researchers", data => {
+      if (this.clickEle == "human") {
+        this.humanFiveTopSelectPage += 1;
+        this.humanFiveTopSelect({ humanId: this.humanId });
+      } else if (this.clickEle == "car") {
+        this.carFiveTopSelectPage += 1;
+        this.carFiveTopSelect({ plateInfo: this.humanId });
+      } else if (this.clickEle == "Camera") {
+        this.huamnCameraPage += 1;
+        this.huamnCamera(this.huamnCameraItem);
+      }
+      console.log(this.clickEle);
+    });
+    bus.$off("Camera");
+    bus.$on("Camera", data => {
+      if (data == "human") {
+        this.humanRankingListPagexs += 1;
+        this.humanRankingListPage(this.humanRankingListPageItem);
+      } else if (data == "car") {
+        this.carRankingListPagesx += 1;
+        this.carRankingListPage(this.carRankingListPagesItem);
+      }
+    });
+    bus.$off("Cameras");
+    bus.$on("Cameras", data => {
+      if (data == "human") {
+        this.humanRankingListPagespo += 1;
+        this.humanRankingListPages(this.humanRankingListPagespoItem);
+      } else if (data == "car") {
+        this.carRankingListPagespo += 1;
+        this.carRankingListPages(this.carRankingListPagespoItem);
+      }
+    });
+  },
+  components: {
+    loadingList,
+    rankingListx,
+    rankingListxTow,
+    loading,
+    trackCamera,
+    timelines,
+    timelineTow,
+    HeaderInformation,
+    schoolTop,
+    schoolTopTow,
+    chart,
+    schoolTopNum,
+    RankingLists,
+    loadingListTow,
+    schoolTopNumTow,
+    humanSockjs,
+    schoolEatate,
+    cs,
+    pop_upWindows,
+    alertCheckHuman,
+    alertCheckVehicle,
+    csTow,
+    addAreax,
+    sockejs,
+    SchoolDetailDialog,
+    Notice
+  },
+  computed: {
+    myValue() {
+      return this.$store.state.selectBtn;
+    },
+    myTimeValue() {
+      return this.$store.state.startTime + " " + this.$store.state.endTime;
+    }
+  },
+  watch: {
+    myValue: function(newVal, oldVal) {
+      // 监听选择按钮
+      console.log(newVal);
+      this.setPlaceholder();
+      this.ifSelectBtn();
+      this.status = [];
+    },
+    myTimeValue: function(newVal, oldVal) {
+      // alert(11111111)
+      // 监听时间变化
+      // this.getHotIndexFive(0);
+      // this.getHotIndexFive(1);
+      // this.getHumanAlarmTop();
+      this.ifSelectBtn();
+      console.log(this.fragmentData);
+    },
+    humanId: function(newValue) {
+      this.humanFiveTopSelectPage = 1;
+    },
+    nhFlag(newval) {
+      if (!newval) {
+        this.searchListData = [];
+      }
+    },
+    // 切换top_nav的时候清空amap
+    '$store.state.selectBtn'(val) {
+      this.map.clearMap();
+    },
+
+    /**
+     * @author tanjinfeng
+     * @date 2020-12-02
+     * @description 勾选改变请求数据
+     */
+    status: {
+      handler: function() {
+        if (
+          this.$store.state.selectBtn == 'school'
+          || this.$store.state.selectBtn == 'estate'
+        ) {
+          this.selectGdblSchoolAndCompanyWorkLists(this.schoolAndEstateItem)
+          this.waterBall(this.schoolAndEstateItem)
+        } else if (
+          this.$store.state.selectBtn == 'human'
+          || this.$store.state.selectBtn == 'car'
+        ) {
+          this.selectHotLXBtn(this.humanAndCaItems)
+        }
+      }
+    },
+  }
+};
+</script>
+
+<style scoped lang="scss">
+.addArea {
+  width: 99px;
+  height: 32px;
+  background: rgba(8, 25, 77, 1);
+  border: 1px solid rgba(50, 139, 234, 1);
+  border-radius: 5px;
+  position: absolute;
+  bottom: 89px;
+  left: 12px;
+  color: #fff;
+  font-size: 16px;
+  line-height: 32px;
+  text-align: center;
+  cursor: pointer;
+}
+.warnings_wrap {
+  padding: 42px 48px 35px;
+  flex: 1;
+  width: 100%;
+  min-height: 942px;
+  height: 100%;
+  box-sizing: border-box;
+  display: flex;
+}
+.warnings_left {
+  width: 395px;
+  margin-right: 28px;
+  height: 100%;
+}
+.warnings_left_zhz {
+  height: 270px;
+  border: 1px solid rgba(21, 61, 150, 1);
+  margin-bottom: 29px;
+  box-sizing: border-box;
+}
+.warnings_left_zhz > div {
+  width: 100%;
+  height: 100%;
+  position: relative;
+}
+.zzy {
+  background: url("../../assets/images/las.png") no-repeat;
+  background-position: 10px 0px;
+}
+.zzys {
+  background: url("../../assets/images/zzy.png") no-repeat;
+  background-position: 10px 0px;
+}
+.zhzsd {
+  position: absolute;
+  top: 105px;
+  left: 5px;
+  color: #8ac5fd;
+  width: 66px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+.zhzsd > h1 {
+  width: 38px;
+  height: 18px;
+  background: url("../../assets/images/ss.png");
+  color: #c7d6ec;
+  font-size: 18px;
+  font-weight: 400;
+  text-align: center;
+  line-height: 1;
+  margin: 0;
+}
+.zhzsd img {
+  width: 37px;
+  height: 44px;
+  border-radius: 3px;
+  margin-top: 3px;
+  cursor: pointer;
+}
+.zhzsd > p {
+  margin: 0;
+  font-size: 14px;
+  font-weight: 400;
+  color: rgba(138, 197, 253, 1);
+  text-align: center;
+}
+.zhzsd > div {
+  font-size: 14px;
+  font-weight: 400;
+  color: rgba(138, 197, 253, 1);
+}
+.zhzsddiv > img {
+  width: 14px;
+  height: 14px;
+  cursor: auto;
+}
+.zhzsd2 {
+  top: 141px;
+  left: 80px;
+}
+.zhzsd3 {
+  top: 160px;
+  left: 160px;
+}
+.zhzsd4 {
+  top: 141px;
+  left: 240px;
+}
+.zhzsd5 {
+  top: 105px;
+  left: 316px;
+}
+.titlesd {
+  position: absolute;
+  top: 44px;
+  left: 141px;
+  width: 107px;
+  height: 59px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+.titlesd > h2 {
+  margin: 0;
+  color: #d9d5ed;
+  font-size: 16px;
+  font-weight: bold;
+  color: rgba(217, 213, 237, 1);
+}
+.warnings_left > div:last-child {
+  margin: 0;
+}
+.warnings_content {
+  width: 978px;
+  margin-right: 26px;
+  height: 920px;
+  overflow: hidden;
+  position: relative;
+}
+#container {
+  width: 978px;
+  height: 920px;
+}
+.warnings_right {
+  width: 412px;
+  height: 100%;
+}
+.warnings_content /deep/ .amap-logo {
+  display: none;
+  opacity: 0 !important;
+}
+.warnings_content /deep/ .amap-copyright {
+  opacity: 0;
+}
+.warnings_right_zhz {
+  height: 865px;
+  border: 1px solid rgba(21, 61, 150, 1);
+  padding: 30px 0;
+  padding-left: 18px;
+  box-sizing: border-box;
+  /*overflow-y: auto;*/
+}
+.warnings_right_zhz /deep/ .el-scrollbar__wrap {
+  overflow-y: scroll;
+  overflow-x: hidden;
+}
+.search {
+  width: 295px;
+  height: 44px;
+  border: 1px solid rgba(50, 139, 234, 1);
+  border-radius: 6px;
+  position: absolute;
+  z-index: 99;
+  top: 30px;
+  left: 20px;
+  background: rgba(8, 25, 77, 0.8);
+  display: flex;
+  overflow: hidden;
+}
+.search > input {
+  width: 244px;
+  height: 42px;
+  border-radius: 5px 0px 0px 5px;
+  border: 0;
+  outline: 0;
+  background: none;
+  padding-left: 17px;
+  color: #fff;
+  box-sizing: border-box;
+  padding-right: 17px;
+}
+.search > input::-webkit-input-placeholder {
+  color: #fff;
+}
+.search > input::-moz-input-placeholder {
+  color: #fff;
+}
+.search > input::-ms-input-placeholder {
+  color: #fff;
+}
+.searchBtn {
+  width: 49px;
+  height: 44px;
+  background: linear-gradient(0deg, rgba(7, 28, 80, 1), rgba(34, 64, 138, 1));
+  position: relative;
+}
+.searchBtn > img {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  margin: auto;
+  cursor: pointer;
+}
+.box {
+  width: 322px;
+  overflow: hidden;
+  height: 69px;
+  position: absolute;
+  z-index: 99;
+  bottom: 8px;
+  left: 8px;
+}
+.boxs {
+  width: 69px;
+  height: 69px;
+  position: relative;
+  background: url("../../assets/images/box.png") no-repeat;
+  background-size: 100% 100%;
+  cursor: pointer;
+}
+.boxsx {
+  width: 240px;
+  height: 55px;
+  margin-left: 45px;
+  margin-top: 7px;
+  position: absolute;
+  z-index: -1;
+  display: flex;
+  align-items: center;
+  box-sizing: border-box;
+  transition: 0.3s;
+  overflow: hidden;
+  background: url("../../assets/images/tangninagbing.png") no-repeat;
+  background-size: 100% 100%;
+}
+.boxsxWh {
+  width: 240px;
+}
+.boxsxWhs {
+  width: 0px;
+}
+.boxsx > div {
+  margin-right: 15px;
+  min-width: 36px;
+}
+.boxsx > img {
+  min-width: 47px;
+  width: 47px;
+  height: 47px;
+}
+.elect {
+  /*width:85px;*/
+  /*height:113px;*/
+  border: 1px solid rgba(50, 139, 234, 1);
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  z-index: 99;
+  background: rgba(8, 25, 77, 0.6);
+
+  /**
+   * @author tanjinfeng
+   * @date 2020-11-26
+   * @description 单选框限制高度（7项），超出滚动
+   */
+  max-height: 200px;
+  overflow-y: auto;
+}
+.elect::-webkit-scrollbar {
+  width: 0;
+}
+.radio {
+  margin: 0.5rem;
+}
+.radio input[type="radio"] {
+  position: absolute;
+  opacity: 0;
+  background: none;
+}
+.radio input[type="radio"] + .radio-label {
+  font-size: 14px;
+  color: #fff;
+  width: 100%;
+  display: flex;
+  align-items: center;
+}
+.radio input[type="radio"] + .radio-label:before {
+  content: "";
+  background: none;
+  border-radius: 100%;
+  border: 3px solid #3f92fe;
+  display: inline-block;
+  width: 14px;
+  height: 14px;
+  vertical-align: top;
+  cursor: pointer;
+  text-align: center;
+  -webkit-transition: all 250ms ease;
+  transition: all 250ms ease;
+  margin-right: 5px;
+}
+.radio input[type="radio"]:checked + .radio-label:before {
+  background-color: #3197ee;
+  box-shadow: inset 0 0 0 4px #555;
+}
+.radio input[type="radio"]:focus + .radio-label:before {
+  outline: none;
+  border-color: #3197ee;
+}
+.radio input[type="radio"]:disabled + .radio-label:before {
+  box-shadow: inset 0 0 0 4px #f4f4f4;
+  border-color: #b4b4b4;
+  background: #b4b4b4;
+}
+.radio input[type="radio"] + .radio-label:empty:before {
+  margin-right: 0;
+}
+.underlineTitleDd {
+  background: url("../../assets/images/xs.png") no-repeat;
+  background-position: 13px 0;
+}
+.rankingList {
+  height: 227px;
+  width: 100%;
+  overflow: hidden;
+  margin-top: 5px;
+  background: url("../../assets/images/daf.png") no-repeat;
+  background-position: 0px 0px;
+  background-size: 100% 15%;
+}
+
+.ads {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+.ads > img {
+  width: 35px;
+  height: 35px;
+}
+.ads > p {
+  margin: 0;
+  color: #fff;
+  text-align: center;
+  font-size: 12px;
+  line-height: 1;
+}
+.warnings_right_zhz /deep/ .el-scrollbar__bar.is-horizontal {
+  height: 0;
+}
+.carsx {
+  width: 60px;
+  height: 35px;
+  background: url("../../assets/images/car.png") no-repeat;
+  background-size: 100% 100%;
+  padding-top: 4px;
+  box-sizing: border-box;
+}
+.carsx > p {
+  text-align: center;
+  margin: 0;
+  line-height: 1;
+}
+.carsx > p:nth-child(1) {
+  font-size: 12px;
+  font-weight: bold;
+  color: rgba(199, 214, 236, 1);
+}
+.carsx > p:nth-child(2) {
+  font-size: 15px;
+  font-weight: bold;
+  color: rgba(199, 214, 236, 1);
+}
+.historicalInformation_content {
+  position: relative;
+  min-height: 865px;
+  height: 865px;
+  overflow: hidden;
+}
+.historicalInformation_content > img {
+  width: 20px;
+  height: 20px;
+  position: absolute;
+  cursor: pointer;
+  z-index: 999;
+}
+.historicalInformation_content > .xsd {
+  top: 6px;
+  left: 16px;
+}
+.historicalInformation_content > .xsds {
+  top: 7px;
+  right: 14px;
+}
+.historicalInformation_content_div {
+  padding: 13px 8px;
+  height: 145px;
+  box-sizing: border-box;
+  background-size: 100% 100%;
+  margin: 39px 17px 30px;
+}
+.historicalInformation_content_div p {
+  margin: 0;
+  color: #99c9e7;
+  font-size: 16px;
+  font-weight: 500;
+}
+.historicalInformation_content_div_div {
+  display: flex;
+  margin-top: 9px;
+  justify-content: space-between;
+}
+.historicalInformation_content_div_div > div:nth-child(1) {
+  width: 153px;
+}
+.historicalInformation_content_car {
+  background: url("../../assets/images/carBgr.png") no-repeat;
+  background-size: 100% 100%;
+  font-size: 23px;
+  font-weight: 500;
+  color: rgba(237, 243, 252, 1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.xjDiv {
+  width: 85px;
+  height: 73px;
+  margin-right: 15px;
+  background: url("../../assets/images/xjbgr.png");
+  background-size: 100% 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+}
+.xjDiv > p {
+  font-weight: 500;
+  color: rgba(199, 214, 236, 1);
+}
+.xjDiv > p:nth-child(1) {
+  font-size: 22px;
+}
+.xjDiv > p:nth-child(2) {
+  font-size: 16px;
+}
+.historicalInformation_content_human img {
+  width: 76px;
+  height: 45px;
+}
+.historicalInformation_content_human > p {
+  padding-left: 13px;
+  font-size: 14px;
+}
+.card {
+  color: #edf3fc;
+  font-size: 14px;
+}
+.cjWrap {
+}
+.cjWrap_content {
+  width: 412px;
+  height: 868px;
+  box-sizing: border-box;
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+.cjWrap_content /deep/ .el-scrollbar__wrap {
+  overflow-x: hidden;
+}
+.closeImg {
+  position: absolute;
+  width: 20px;
+  height: 20px;
+  top: 6px;
+  right: 20px;
+  cursor: pointer;
+}
+
+.allNum {
+  width: 381px;
+  height: 122px;
+  padding: 15px 0;
+  box-sizing: border-box;
+  margin: auto;
+  background: url("../../assets/images/allNumBor.png") no-repeat;
+  background-size: 100% 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+}
+.allNum > div {
+  display: flex;
+  margin-bottom: 5px;
+}
+.allNum > div > div {
+  width: 44px;
+  height: 58px;
+  background: url("../../assets/images/numBor.png") no-repeat;
+  background-size: 100% 100%;
+  font-size: 37px;
+  font-weight: bold;
+  font-style: italic;
+  color: rgba(254, 246, 87, 1);
+  line-height: 68px;
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  padding-left: 5px;
+}
+.allNum > span {
+  font-size: 22px;
+  font-weight: 500;
+  color: rgba(107, 238, 252, 1);
+}
+
+.dataList {
+  margin-top: 27px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+.dataList_wrap {
+  width: 355px;
+  margin: auto;
+  transition: 0.5s;
+}
+.heightTwo {
+  height: 200px;
+  overflow: hidden;
+}
+.dataList_wrap > div {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  height: 37px;
+  box-sizing: border-box;
+  padding: 0 31px 0 12px;
+  margin-bottom: 3px;
+  position: relative;
+  z-index: 999;
+}
+.dataList_wrap > div > img {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: -1;
+}
+.dataList_wrap > div > span:nth-child(1) {
+  font-size: 16px;
+  font-weight: 500;
+  font-style: italic;
+  color: rgba(199, 214, 236, 1);
+}
+.dataList_wrap > div > span:nth-child(2) {
+  font-size: 20px;
+  font-weight: 500;
+  color: rgba(199, 214, 236, 1);
+}
+.dataList_btn {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  margin-top: 6px;
+}
+.dataList_btn > div {
+  font-size: 14px;
+  font-weight: 400;
+  color: rgba(199, 214, 236, 1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.dataList_btn > div > img {
+  width: 13px;
+  height: 13px;
+  margin-right: 6px;
+}
+.dataList_btn > img {
+  width: 24px;
+  height: 24px;
+  margin-top: 5px;
+  cursor: pointer;
+  margin-bottom: 11px;
+}
+.dataList_title {
+  display: flex;
+  flex-direction: column;
+}
+.dataList_title > div:nth-child(2) {
+  flex: 1;
+  overflow: hidden;
+}
+.dataList_back {
+  width: 404px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  background: url("../../assets/images/daf.png") no-repeat;
+  background-size: 100% 100%;
+  padding: 0 14px 0 18px;
+  justify-content: space-between;
+  font-size: 14px;
+  font-weight: 400;
+  color: rgba(199, 214, 236, 1);
+  box-sizing: border-box;
+}
+.dataList_content {
+  margin-top: 16px;
+  height: 100%;
+}
+.scr {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+.flexs1 {
+  flex: 1;
+}
+.overturn {
+  transform: rotate(180deg);
+}
+.tongji_title {
+  height: 28px;
+  width: 100%;
+  background: url("../../assets/images/daf.png") no-repeat;
+  background-size: 100% 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  box-sizing: border-box;
+  padding: 0 18px 0 24px;
+  margin-top: 30px;
+  margin-bottom: 23px;
+}
+.scrollbarHide /deep/ .el-scrollbar__wrap {
+  overflow-x: hidden;
+}
+.tongji_title > span {
+  font-size: 16px;
+  font-weight: 500;
+  color: rgba(153, 201, 231, 1);
+}
+.tongji_title > p {
+  font-size: 16px;
+  font-weight: 500;
+  color: rgba(153, 201, 231, 1);
+}
+.tongji_title > p > span {
+  font-size: 16px;
+  font-weight: 500;
+  color: rgba(255, 255, 255, 1);
+  margin-left: 10px;
+}
+/*校园小区*/
+.campusCommunity_Wrap {
+}
+.campusCommunity_Wrap > div {
+  height: 270px;
+  margin-bottom: 25px;
+}
+.campusCommunity_Wrap > div:last-child {
+  margin: 0;
+}
+/*学校小区*/
+.schoolTopNums {
+  width: 346px;
+  height: 99px;
+  margin: auto;
+  margin-bottom: 40px;
+}
+.FlowBall {
+  height: 155px;
+  /*background: #000;*/
+  padding: 0 20px;
+  margin-bottom: 26px;
+  box-sizing: border-box;
+  overflow-x: hidden;
+  position: relative;
+}
+.FlowBall > div {
+  display: flex;
+}
+.FlowBall > img {
+  width: 18px;
+  height: 18px;
+  position: absolute;
+  top: 30px;
+  cursor: pointer;
+}
+.FlowBallLeftImg {
+  left: 11px;
+}
+.FlowBallRightImg {
+  right: 11px;
+}
+.RankingList {
+  height: 477px;
+  width: 100%;
+  overflow: hidden;
+  padding: 0 28px;
+  box-sizing: border-box;
+}
+.loadingListTows {
+  height: 477px;
+  width: 100%;
+  padding-left: 18px;
+  box-sizing: border-box;
+}
+.schoolTopNumTows {
+  height: 148px;
+  width: 346px;
+  margin: auto;
+  margin-bottom: 9px;
+}
+.FlowBallTow {
+  height: 155px;
+  /*background: #000;*/
+  margin: 0 20px;
+  margin-bottom: 14px;
+  overflow: hidden;
+}
+.FlowBallTow > div {
+  display: flex;
+}
+.markerContent {
+  position: relative;
+  width: 25px;
+  height: 34px;
+}
+.cmarkerContent img {
+  width: 100%;
+  height: 100%;
+}
+
+.list1 {
+  background: url("../../assets/images/list1.png") no-repeat;
+  background-size: 100% 100%;
+}
+.list2 {
+  background: url("../../assets/images/list2.png") no-repeat;
+  background-size: 100% 100%;
+}
+.list3 {
+  background: url("../../assets/images/list3.png") no-repeat;
+  background-size: 100% 100%;
+}
+.list4 {
+  background: url("../../assets/images/list4.png") no-repeat;
+  background-size: 100% 100%;
+}
+.list5 {
+  background: url("../../assets/images/list5.png") no-repeat;
+  background-size: 100% 100%;
+}
+.list6 {
+  background: url("../../assets/images/list6.png") no-repeat;
+  background-size: 100% 100%;
+}
+.list7 {
+  background: url("../../assets/images/list7.png") no-repeat;
+  background-size: 100% 100%;
+}
+.list8 {
+  background: url("../../assets/images/list8.png") no-repeat;
+  background-size: 100% 100%;
+}
+.list9 {
+  background: url("../../assets/images/list9.png") no-repeat;
+  background-size: 100% 100%;
+}
+.list10 {
+  background: url("../../assets/images/list10.png") no-repeat;
+  background-size: 100% 100%;
+}
+.list11 {
+  background: url("../../assets/images/list11.png") no-repeat;
+  background-size: 100% 100%;
+}
+.list12 {
+  background: url("../../assets/images/list12.png") no-repeat;
+  background-size: 100% 100%;
+}
+.smDivBgr /deep/ .el-scrollbar__wrap {
+  overflow-x: hidden;
+}
+.searchList {
+  position: absolute;
+  height: 220px;
+  width: 295px;
+  border: 1px solid rgba(50, 139, 234, 1);
+  border-radius: 6px;
+  z-index: 99;
+  top: 85px;
+  left: 20px;
+  background: rgba(8, 25, 77, 0.8);
+  color: #90d3fd;
+}
+.searchChildrenList {
+  padding: 5px 14px;
+  cursor: pointer;
+}
+.searchChildrenList:hover {
+  background: url("../../assets/images/serachList.png") no-repeat;
+  background-size: 100% 100%;
+}
+.searchList /deep/ .el-scrollbar__wrap {
+  overflow-x: hidden;
+}
+
+.swpreCri_wrap {
+  height: 29px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.swpreCri_wrap > div {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: #666;
+  cursor: pointer;
+  margin: 0 5px;
+}
+.swper_Active {
+  background: #fff !important;
+}
+
+// 勾选框
+.status-checkbox {
+  position: absolute;
+  right: 0;
+  bottom: 210px;
+  border: 1px solid #328bea;
+  background: rgba(8, 25, 77, 0.6);
+  color: white;
+  font-size: 14px;
+  padding: 4px 10px;
+  
+  &__item:not(:last-child) {
+    margin-bottom: 7px;
+  }
+}
+</style>

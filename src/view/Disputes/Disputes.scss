@@ -1,0 +1,454 @@
+// 图标翻牌旋转
+@keyframes flip {
+    0% {transform: rotateY(0deg);}
+    10% {transform: rotateY(90deg)}
+    20% {transform: rotateY(0deg)}
+}
+@keyframes flash1 {
+    from {
+        background: -webkit-linear-gradient(-30deg, #14E1FF 0.2685546875%, #337BFF 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+    }
+    to {
+        background: -webkit-linear-gradient(-30deg, #337BFF 0.2685546875%, #14E1FF 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+    }
+}
+@keyframes flash2 {
+    from {
+        background: -webkit-linear-gradient(-45deg, #77E6AF 0.78125%, #51AAE6 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+    }
+    to {
+        background: -webkit-linear-gradient(-45deg, #51AAE6 0.78125%, #77E6AF 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+    }
+}
+@keyframes flash3 {
+    from {
+        background: -webkit-linear-gradient(-45deg, #79DDEE 0.78125%, #9A8FF5 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+    }
+    to {
+        background: -webkit-linear-gradient(-45deg, #9A8FF5 0.78125%, #79DDEE 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+    }
+}
+@keyframes fade-in-out {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: .7;
+    }
+}
+// 布局和标题
+.disputes {
+    display: flex;
+    width: 1920px;
+    height: 1005px;
+    * {
+        font-family: 'SourceHanSansCN-Regular';
+    }
+    & > div {
+        position: relative;
+        // border: 1px solid red;
+    }
+    &__left,
+    &__right {
+        width: 450px;
+    }
+    &__middle {
+        flex: 1;
+    }
+    // 标题
+    &__title {
+        height: 32px;
+        line-height: 32px;
+        padding: 0 0 0 14px;
+        color: #6FFAFD;
+        font-size: 18px;
+        background: no-repeat url('../GarbageClassification/img/title.png') left;
+    }
+}
+// 左边栏
+.disputes__left {
+    & > div {
+        margin-left: 34px;
+    }
+    // 涉案数据统计
+    &__statistic {
+        margin: 21px 0 27px;
+        overflow: visible;
+        // 左侧图片
+        & > span {
+            display: inline-block;
+            position: relative;
+            &:not(:last-child) {
+                margin-right: 80px;
+            }
+            img {
+                animation: flip 15s linear infinite;
+            }
+        }
+        // 右侧内容
+        &__item {
+            width: 200px;
+            height: 65px;
+            position: absolute;
+            bottom: 5px;
+            left: 75px;
+            white-space: nowrap;
+            // 标题
+            & > div:nth-child(1) {
+                color: #99C9E7;
+                font-size: 12px;
+            }
+            // 数值
+            & > div:nth-child(2) {
+                color: #EDF3FC;
+                font-family: "DCM";
+                font-size: 25px;
+                font-weight: bold;
+                line-height: 40px;
+            }
+            // 底部蓝色横线
+            &::after {
+                content: '';
+                display: block;
+                width: 28px;
+                height: 5px;
+                background: rgba(59, 144, 238, .6);
+                position: absolute;
+                bottom: 0;
+                left: 0;
+            }
+        }
+    }
+    // 涉案精细化数据统计
+    &__detail {
+        margin: 17px 0 0 0;
+        // 三格横幅
+        &__banner {
+            margin: 0 0 12px 0;
+            width: 401px;
+            height: 74px;
+            background: no-repeat center/100% 100% url('./img/banner.png');
+            font-size: 0;
+            & > div {
+                display: inline-block;
+                height: 100%;
+                text-align: center;
+                padding-top: 10px;
+                &:nth-child(1) {
+                    width: 125px;
+                }
+                &:nth-child(2) {
+                    width: 125px;
+                }
+                &:nth-child(3) {
+                    width: 150px;
+                }
+                & > div {
+                    // 上方数字
+                    &:first-child {
+                        font-size: 34px;
+                        font-family: 'DCM';
+                        font-weight: bold;
+                        color: #99C9E7;
+                    }
+                    // 下方标题
+                    &:last-child {
+                        font-size: 12px;
+                        color: #EDF3FC;
+                    }
+                }
+            }
+        }
+        // 满意率和办结率
+        &__short {
+            display: inline-block;
+            width: 192px;
+            height: 91px;
+            margin-bottom: 20px;
+            text-align: center;
+            background: no-repeat center/100% 100% url('./img/banner_short.png');
+            // 上方标题
+            & > div:first-child {
+                margin-top: 10px;
+                color: #33B2ED;
+                font-size: 16px;
+                font-weight: bold;
+            }
+            // 下方比率
+            & > div:last-child {
+                color: #33B2ED;
+                font-size: 38px;
+                font-family: 'DCM';
+                font-weight: bold;
+                & > span {
+                    font-size: 25px;
+                }
+            }
+            &:first-child {
+                margin-right: 13px;
+                & > div:last-child {
+                    // 渐变色
+                    background: -webkit-linear-gradient(-30deg, #337BFF 0.2685546875%, #14E1FF 100%);
+                    -webkit-background-clip: text;
+                    -webkit-text-fill-color: transparent;
+                    animation: flash1 infinite 4s alternate;
+                }
+            }
+            &:last-child > div:last-child {
+                // 渐变色
+                background: -webkit-linear-gradient(-45deg, #51AAE6 0.78125%, #77E6AF 100%);
+                -webkit-background-clip: text;
+                -webkit-text-fill-color: transparent;
+                animation: flash2 infinite 4s alternate;
+            }
+        }
+        // 底部6个
+        &__vortex {
+            & > div {
+                width: 94px;
+                height: 72px;
+                background: no-repeat center/100% 100% url('./img/vortex.png');
+                position: relative;
+                display: inline-block;
+                margin: 0 27px 38px 11px;
+                text-align: center;
+                & > div {
+                    z-index: 2;
+                    width: 100%;
+                    // 数值
+                    &:first-child {
+                        z-index: 2;
+                        font-size: 30px;
+                        font-family: 'DCM';
+                        font-weight: bold;
+                        color: #79DDEE;
+                        // 渐变色
+                        background: -webkit-linear-gradient(-45deg, #9A8FF5 0.78125%, #79DDEE 100%);
+                        -webkit-background-clip: text;
+                        -webkit-text-fill-color: transparent;
+                        animation: flash3 infinite 4s alternate;
+                    }
+                    // 标题
+                    &:last-child {
+                        position: absolute;
+                        bottom: -20px;
+                        color: #71BAFF;
+                        font-size: 12px;
+                        font-weight: bold;
+                    }
+                }
+                &::before {
+                    z-index: 1;
+                    content: '';
+                    display: block;
+                    width: 154px;
+                    height: 63px;
+                    position: absolute;
+                    left: -30px;
+                    top: -22px;
+                    background: no-repeat center/100% 100% url('./img/vortex_light.png');
+                    animation: fade-in-out linear infinite 3s alternate;
+                }
+            }
+        }
+    }
+}
+// 中间栏
+.disputes__middle {
+    // 流光位置
+    .gc-light-cube {
+        top: 251px;
+    }
+    // 切换标签
+    &__tab {
+        z-index: 1;
+        position: absolute;
+        top: 30px;
+        right: 60px;
+        font-size: 0;
+        &__item {
+            display: inline-block;
+            height: 28px;
+            line-height: 28px;
+            text-align: center;
+            color: #99C9E7;
+            font-size: 17px;
+            border: 2px solid transparent;
+            padding: 0 8px;
+            margin: 0 0 0 5px;
+            user-select: none;
+            cursor: pointer;
+            &:hover {
+                color: #FEFEFE;
+            }
+            &#{&}--active {
+                color: #FEFEFE;
+                border-color: #6FFAFD;
+            }
+        }
+    }
+    // 底部饼图
+    &__bottom {
+        display: flex;
+        width: 100%;
+        height: 350px;
+        margin-top: 20px;
+        & > div {
+            display: inline-block;
+            width: 33%;
+            flex-grow: 1;
+            flex-shrink: 0;
+        }
+    }
+}
+// 右边栏
+.disputes__right {
+    & > div {
+        position: relative;
+    }
+    &__tab {
+        position: absolute;
+        right: 10px;
+        top: 2px;
+        font-size: 0;
+        &__item {
+            display: inline-block;
+            height: 24px;
+            line-height: 24px;
+            text-align: center;
+            color: #99C9E7;
+            font-size: 14px;
+            border: 2px solid transparent;
+            padding: 0 6px;
+            margin: 0 0 0 5px;
+            user-select: none;
+            cursor: pointer;
+            &:hover {
+                color: #FEFEFE;
+            }
+            &#{&}--active {
+                color: #FEFEFE;
+                border-color: #6FFAFD;
+            }
+        }
+        select {
+            border: 1px solid #5A5D6C;
+            outline: none;
+            background: transparent;
+            color: white;
+            width: 106px;
+            height: 28px;
+            line-height: 28px;
+            text-align: center;
+            text-align-last: center;
+            font-size: 14px;
+            cursor: pointer;
+            &:hover {
+                border-color: #6FFAFD;
+            }
+        }
+    }
+    &__table {
+        width: calc(100% - 35px);
+        height: 320px;
+        margin: 12px 30px 26px 15px;
+        border-collapse: collapse;
+        * {
+            border: none;
+            font-size: 14px;
+            text-align: center;
+        }
+        th {
+            color: white;
+            background: rgba(22, 49, 136, .3);
+            height: 40px;
+        }
+        tr {
+            line-height: 20px;
+            height: 20px;
+            td:nth-child(-n+2) {
+                color: #C7D6EC;
+            }
+            td:nth-child(-n+4):nth-child(n+3) {
+                color: #5B9DDF;
+            }
+            &:nth-child(2) > td {
+                color: #F54E57 !important;
+            }
+            &:nth-child(3) > td {
+                color: #FC914C !important;
+            }
+            &:nth-child(4) > td {
+                color: #F2B246 !important;
+            }
+            // 姓名一列宽度
+            & > *:nth-child(2) {
+                width: 80px;
+            }
+            &:not(:first-child) {
+                border-bottom: 1px solid rgba(191, 208, 244, 0.15);
+            }
+        }
+    }
+    // 底部13长条
+    &__item {
+        color: #C7D6EC;
+        font-size: 14px;
+        font-weight: bold;
+        background: #10173A;
+        margin: 0 10px 5px 15px;
+        height: 20px;
+        line-height: 20px;
+        position: relative;
+        &__bar, &__text {
+            position: absolute;
+            left: 0;
+            top: 0;
+            height: 100%;
+        }
+        &__bar {
+            z-index: 1;
+            width: 0%;
+            background: linear-gradient(to right, #22589C, #14254F);
+            transition: all 1s;
+        }
+        // 长条高亮长度
+        @for $p from 0 through 100 {
+            .disputes__right__item__bar--length#{$p} {
+                width: $p+0%;
+                transition: all 1.5s;
+                @keyframes stretch#{$p} {
+                    0% {width: 0;}
+                    10% {width: $p+0%;}
+                    100% {width: $p+0%;}
+                }
+                animation: stretch#{$p} 15s infinite;
+            }
+        }
+        &__text {
+            padding: 0 5px;
+            width: 100%;
+            z-index: 2;
+            & > span:nth-child(2) {
+                float: right;
+                margin-right: 10px;
+            }
+            // 单位
+            & > span > span {
+                font-size: 10px;
+            }
+        }
+    }
+}

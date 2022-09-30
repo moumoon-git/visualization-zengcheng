@@ -1,0 +1,278 @@
+<template>
+  <div>
+    <div
+      class="loadingList_wrap "
+      v-if="type == 'school' || type == 'estate'"
+      :class="item.flag ? 'background_wrap' : 'border_wrap'"
+      v-for="(item, index) in listData"
+      :key="index"
+      @click="selectMap(item)"
+    >
+      <div class="loadingList_top">
+        <h4 @click="showHumanDetail(item)"> 
+          {{ item.platformName }}
+        </h4>
+        <p>{{ item.gmtCreate }}</p>
+      </div>
+      <div class="loadingList_bottom">
+        <!--       左边-->
+        <div class="loadingList_left" @click.stop="">
+          <img
+            class="BigImg"
+            :data-original="item.imageUrl.split(',')[0].indexOf('http')>-1?item.imageUrl.split(',')[0]:$window.SITE_CONFIG['cloudUrl']+item.imageUrl.split(',')[0]"
+            :src="item.imageUrl.split(',')[0].indexOf('http')>-1?item.imageUrl.split(',')[0]:$window.SITE_CONFIG['cloudUrl']+item.imageUrl.split(',')[0]"
+          />
+        </div>
+        <!--      右边-->
+        <div class="loadingList_right">
+          <div class="fromx">
+            <i style="width: 17%;max-width: 48.5px;min-width: 48.5px;">类型</i>
+            <span class="leixing">{{ item.eventTypeName }}</span>
+          </div>
+          <div class="fromx">
+            <i style="width: 17%;max-width: 48.5px;min-width: 48.5px;">状态</i>
+            <span v-if="item.status == 1">待核实</span>
+            <span v-if="item.status == 2">核实中</span>
+            <span v-if="item.status == 3">待处理</span>
+            <span v-if="item.status == 4">处理中</span>
+            <span v-if="item.status == 5">已处理</span>
+            <span v-if="item.status == 6">超出范围</span>
+            <span v-if="item.status == 7">已关闭</span>
+          </div>
+          <div class="fromx">
+            <i style="width: 17%;max-width: 48.5px;min-width: 48.5px;">描述</i>
+            <span>{{ item.keyword }}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div
+      class="loadingList_wrap "
+      v-if="type == 'human'"
+      :class="item.flag ? 'background_wrap' : 'border_wrap'"
+      v-for="(item, index) in listData"
+      :key="index"
+    >
+      <div class="loadingList_top">
+        <h4>{{ item.cameraName }}</h4>
+        <p>{{ item.alarmTime }}</p>
+      </div>
+      <div class="loadingList_bottom">
+        <!--       左边-->
+        <div class="loadingList_left" @click.stop="">
+          <img
+            class="BigImg"
+            :data-original="item.bkgPicUrl"
+            :src="item.bkgPicMinUrl"
+          />
+        </div>
+        <!--      右边-->
+        <div class="loadingList_right">
+          <div class="fromx">
+            <i>姓名</i>
+            <span>{{ item.humanName }}</span>
+          </div>
+          <div class="fromx">
+            <i>身份证</i>
+            <span>{{
+              item.credentialsNum.substr(0, 4) +
+                "****" +
+                item.credentialsNum.substr(item.credentialsNum.length - 4)
+            }}</span>
+          </div>
+          <div class="fromx">
+            <i>类型</i>
+            <span class="leixing">{{ item.listLibName }}</span>
+          </div>
+          <el-tooltip class="item" effect="dark" content="查看抓拍信息" placement="top">
+            <el-button type="primary" icon="el-icon-s-order" circle size="small" style="position: absolute;right: 2%;top: 25%;" @click="showHumanDetail(item)"></el-button>
+          </el-tooltip>
+          <el-tooltip class="item" effect="dark" content="查看轨迹定位" placement="top">
+            <el-button type="success" icon="el-icon-s-marketing" circle size="small" style="position: absolute;right: 2%;top: 55%;" @click="selectMap(item)"></el-button>
+          </el-tooltip>
+        </div>
+      </div>
+    </div>
+
+    <div
+      class="loadingList_wrap "
+      v-if="type == 'car'"
+      :class="item.flag ? 'background_wrap' : 'border_wrap'"
+      v-for="(item, index) in listData"
+      :key="index"
+    >
+      <div class="loadingList_top">
+        <h4>{{ item.cameraName }}</h4>
+        <p>{{ item.alarmTime.substr(0, item.alarmTime.indexOf(".")) }}</p>
+      </div>
+      <div class="loadingList_bottom">
+        <!--       左边-->
+        <div class="loadingList_left" @click.stop="">
+          <img
+            class="BigImg"
+            :data-original="item.picAbbreviate"
+            :src="item.picAbbreviateMin"
+          />
+        </div>
+        <!--      右边-->
+        <div class="loadingList_right">
+          <div class="fromx">
+            <i>车辆</i>
+            <span>{{ item.userTypeName }}</span>
+          </div>
+          <div class="fromx">
+            <i>车牌</i>
+            <span>{{ item.plateInfo }}</span>
+          </div>
+          <div class="fromx">
+            <i>类型</i>
+            <span class="leixing">{{ item.typeName }}</span>
+          </div>
+          <el-tooltip class="item" effect="dark" content="查看抓拍信息" placement="top">
+            <el-button type="primary" icon="el-icon-s-order" circle size="small" style="position: absolute;right: 2%;top: 25%;" @click="showHumanDetail(item)"></el-button>
+          </el-tooltip>
+          <el-tooltip class="item" effect="dark" content="查看轨迹定位" placement="top">
+            <el-button type="success" icon="el-icon-s-marketing" circle size="small" style="position: absolute;right: 2%;top: 55%;" @click="selectMap(item)"></el-button>
+          </el-tooltip>
+        </div>
+      </div>
+    </div>
+  </div>
+</template>
+
+<script>
+export default {
+  name: "loadingList",
+  data() {
+    return {
+      listData: [],
+      type: ""
+    };
+  },
+  methods: {
+    initData(data, type) {
+      this.type = type;
+      data.forEach(function(ele, index) {
+        ele.flag = false;
+      });
+      this.listData = data;
+    },
+    cantarData(data, type) {
+      if (this.type == type) {
+        data.forEach(function(ele, index) {
+          ele.flag = false;
+        });
+        this.listData = this.listData.concat(data);
+      } else {
+        return;
+      }
+      // console.log(this.listData)
+    },
+    selectMap(item) {
+      // console.log(item.longitude,item.latitude)
+      this.$emit("coordinate", item);
+      this.listData.forEach(function(ele, index) {
+        ele.flag = false;
+      });
+      item.flag = true;
+    },
+
+    showHumanDetail(item) {
+      this.$emit("coordinateDialog", item);
+    }
+  },
+  mounted() {},
+  watch: {
+    listData: function(newVlue) {
+      // console.log(newVlue)
+      this.$nextTick(() => {
+        this.$viewer();
+      });
+    }
+  }
+};
+</script>
+
+<style scoped>
+.loadingList_wrap {
+  position: relative;
+  width: 373px;
+  height: 145px;
+  overflow: hidden;
+  padding: 13px 7px;
+  box-sizing: border-box;
+  margin-bottom: 20px;
+}
+.loadingList_left {
+}
+.loadingList_top {
+  display: flex;
+  align-items: center;
+  margin-bottom: 8px;
+  justify-content: space-between;
+}
+.loadingList_top > p {
+  min-width: 127px;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  margin: 0;
+  font-size: 14px;
+  font-weight: 500;
+  color: rgba(237, 243, 252, 1);
+}
+.loadingList_top > h4 {
+  margin: 0;
+  font-size: 16px;
+  font-family: Alibaba;
+  font-weight: normal;
+  color: rgba(153, 201, 231, 1);
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  flex: 1;
+}
+.loadingList_bottom {
+  display: flex;
+}
+.fromx {
+  width: 100%;
+  color: #fff;
+  font-size: 14px;
+  display: flex;
+}
+.fromx > span {
+  display: block;
+  padding-left: 5px;
+  width: 49%;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+.leixing {
+  background: url("../../../assets/images/daf.png") no-repeat;
+  background-size: 100% 100%;
+}
+.fromx i {
+  display: inline-block;
+  width: 22%;
+  text-align-last: justify;
+  text-align: justify;
+  text-justify: distribute-all-lines; /*// 这行必加，兼容ie浏览器*/
+  font-style: normal;
+  margin: 0 7px;
+  color: #99c9e7;
+}
+.loadingList_left img {
+  width: 152px;
+  height: 90px;
+  cursor: pointer;
+}
+.loadingList_right {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
+}
+</style>

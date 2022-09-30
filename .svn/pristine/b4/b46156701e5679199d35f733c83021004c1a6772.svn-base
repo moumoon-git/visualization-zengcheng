@@ -1,0 +1,265 @@
+<template>
+  <div class="plan_wrap">
+    <span class="plan_Title">预案名称</span>
+    <select v-model="seleVal" class="plan_select">
+      <option :value="item.id" v-for="(item, index) in allPlanList" :key="index">{{ item.name }}</option>
+    </select>
+
+    <ul class="plan_Ul">
+      <li
+        v-for="(item, index) in tabList"
+        :key="index"
+        :class="item.flag ? 'liActiveS' : ''"
+        @click="clickTab(index)"
+      >{{ item.name }}</li>
+    </ul>
+
+    <div v-show="tabList[0].flag" class="tree_Wrap">
+      <viewer v-if="imgSrc">
+        <img
+          :src="imgSrc"
+          style="max-height: 100%; max-width: 100%; cursor: zoom-in;"
+          alt
+          :key="imgSrc"
+        >
+      </viewer>
+      <iframe v-else style="width: 100%;height: 100%;display: block;" :src="ifranmSrc"></iframe>
+    </div>
+
+    <div v-if="tabList[1].flag" class="tree_Wrap" style="margin-top: 20px;">
+      <!--<el-tree
+        :data="data"
+        :props="defaultProps"
+        @node-click="handleNodeClick"
+      ></el-tree>-->
+      <organizational-structure :tableList="data" :eventId="eventId"></organizational-structure>
+    </div>
+  </div>
+</template>
+
+<script>
+import allUrl from "../../../../../assets/api/allApiUrl";
+import OrganizationalStructure from "./OrganizationalStructure/OrganizationalStructure";
+import bus from "@/assets/js/bus";
+
+export default {
+  components: {
+    OrganizationalStructure
+  },
+  name: "plan",
+  data() {
+    return {
+      tabList: [
+        { name: "预案查阅", flag: true },
+        // { name: "处置流程", flag: false },
+        { name: "组织架构", flag: false }
+      ],
+      ifranmSrc: "",
+      allPlanList: [],
+      defaultProps: {
+        children: "rpIncidentUnitEntityList",
+        label: "name"
+      },
+      seleVal: "",
+      data: [],
+      eventId: 0,
+      // 图片url
+      imgSrc: '',
+    };
+  },
+  methods: {
+    clickTab(item) {
+      this.tabList.forEach(ele => {
+        ele.flag = false;
+      });
+
+      this.tabList[item].flag = true;
+      if (item.name == "组织架构") {
+        // setTimeout(() => {
+        console.log("打他的只", this.data);
+        // bus.$emit("incidentMailgroup", this.data);
+        // }, 0);
+      }
+    },
+    handleNodeClick(data) {
+      console.log(data);
+    },
+    // getlistTree(id) {
+    //   let data = {
+    //     ...allUrl.listAndPage,
+    //     data: {
+    //       event_type_id: id,
+    //       page: 1,
+    //       limit: 500
+    //     }
+    //   };
+    //   data.header = {
+    //     "Content-Type": "application/json"
+    //   };
+    //   this.apix(data)
+    //     .then(res => {
+    //       console.log("预案数据", res);
+    //       this.allPlanList = res.page.list;
+    //       this.seleVal = this.allPlanList[0].id;
+    //     })
+    //     .catch(err => {
+    //       console.log(err);
+    //     });
+    // }
+
+    getPlanList(data) {
+      // console.log("拿到的数据", data);
+      this.allPlanList = data.rpIncidentPlanEntitys;
+      this.seleVal = this.allPlanList[0].id;
+    }
+  },
+  mounted() {},
+  watch: {
+    seleVal(newVal) {
+      console.log(newVal);
+      let data = {
+        ...allUrl.getOneAndLink,
+        // data: this.qs.stringify({
+        //   // id: 19
+        //   id:newVal
+        // })
+        params: {
+          id: newVal
+        }
+      };
+      this.apix(data)
+        .then(res => {
+          this.eventId = res.data.eventId;
+          console.log("应急预案数据", res,this.eventId);
+          if (res.code == 0) {
+            this.data = res.data.incidentMailgroup;
+            console.log("什么东西", res.data.incidentMailgroup);
+
+            /**
+             * @author tanjinfeng
+             * @date 2020-12-03
+             * @description 修改预案预览，增加pdf和图片支持
+             */
+            /*** 原来的代码 ***/
+            // this.ifranmSrc =
+            //   "https://view.officeapps.live.com/op/view.aspx?src=" +
+            //   res.data.document.url;
+            /*** 修改后的代码 ***/
+            if (res.data.document.url.toLowerCase().includes('.pdf')) {
+              // pdf
+              this.ifranmSrc = res.data.document.url
+              this.imgSrc = ''
+            } else if (
+              res.data.document.url.toLowerCase().includes('.jpg')
+              || res.data.document.url.toLowerCase().includes('.jpeg')
+              || res.data.document.url.toLowerCase().includes('.png')
+              || res.data.document.url.toLowerCase().includes('.bmp')
+            ) {
+              // 图片
+              this.ifranmSrc = ''
+              this.imgSrc = res.data.document.url
+            } else {
+              // office文档
+              this.ifranmSrc = `https://view.officeapps.live.com/op/view.aspx?src=${res.data.document.url}`
+              this.imgSrc = ''
+            }
+            /*** 结束 ***/
+
+            this.clickTab(0);
+          } else {
+            this.$message.error(res.msg);
+          }
+        })
+        .catch(err => {
+          console.log(err);
+        });
+    }
+  }
+};
+</script>
+
+<style scoped>
+ul,
+li {
+  padding: 0;
+  margin: 0;
+  list-style: none;
+}
+.plan_wrap {
+  height: 100%;
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+.plan_Title {
+  position: absolute;
+  top: 17px;
+  left: 13px;
+  font-size: 17px;
+  font-weight: 400;
+  color: rgba(255, 255, 255, 1);
+}
+.plan_select {
+  outline: none;
+  font-size: 16px;
+  font-weight: 400;
+  height: 26px;
+  color: rgba(0, 242, 255, 1);
+  margin: auto;
+  background: url("../../../../../assets/images/cszh/li2.png") no-repeat;
+  background-size: 100% 100%;
+  border: none;
+  line-height: 26px;
+  display: block;
+  margin-top: 13px;
+  margin-bottom: 20px;
+}
+.plan_select > option {
+  background: rgba(11, 30, 75, 0.8);
+}
+
+.plan_Ul {
+  display: flex;
+}
+.plan_Ul > li {
+  flex: 1;
+  border: 1px solid rgba(29, 90, 191, 1);
+  text-align: center;
+  height: 42px;
+  line-height: 42px;
+  font-size: 20px;
+  font-weight: 400;
+  color: rgba(0, 170, 195, 1);
+  box-sizing: border-box;
+  cursor: pointer;
+}
+.plan_Ul > .liActiveS {
+  background: url("../../../../../assets/images/cszh/tbgr.png") no-repeat;
+  background-size: 100% 100%;
+  font-size: 20px;
+  font-weight: 500;
+  color: rgba(0, 242, 255, 1);
+  border: 1px solid rgba(59, 172, 198, 1);
+}
+.tree_Wrap {
+  flex: 1;
+  height: 55vh;
+}
+.tree_Wrap /deep/ .el-tree {
+  background: transparent;
+  color: rgba(0, 170, 195, 1);
+}
+.tree_Wrap /deep/ .el-tree-node__expand-icon {
+  color: rgba(0, 170, 195, 1);
+}
+.tree_Wrap /deep/ .el-tree-node__content:hover {
+  background: rgba(11, 30, 75, 0.8);
+}
+.tree_Wrap /deep/ .is-current {
+  background: rgba(11, 30, 75, 0.8) !important;
+}
+.tree_Wrap /deep/ .el-tree-node__expand-icon.is-leaf {
+  color: transparent;
+}
+</style>

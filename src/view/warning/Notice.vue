@@ -1,0 +1,330 @@
+/**
+ * @author tanjinfeng
+ * @date 2020-11-20
+ * @description 右下角websocket通知弹框
+ */
+<template>
+  <div></div>
+</template>
+
+<script>
+import SockJS from 'sockjs-client'
+import Stomp from 'stompjs'
+
+export default {
+  name: 'Notice',
+
+  data() {
+    return {
+      // 物业小区title
+      communityTitle: '',
+      // 校园安全上报title
+      campusTitle: '',
+    }
+  },
+
+  mounted() {
+    // 调用获取物业小区、校园安全上报title方法
+    this.getCommunityTitle();
+    this.getCampusTitle();
+  },
+
+  methods: {
+    /**
+     * @description 获取用户、平台信息
+     * @return {Promise} 用户信息
+     */
+    getUserInfo() {
+      return new Promise((resolve, reject) => {
+        this.apix(`${window.SITE_CONFIG.baseUrl}/sys/user/info`)
+          .then(response => {
+            resolve(response)
+          })
+          .catch(error => {
+            reject(response)
+          })
+      })
+    },
+
+    // 获取物业小区title
+    getCommunityTitle() {
+      this.$http({
+        url: this.$http.adornUrl(`/sys/config/infoByKey?key=WYXQ_TK`),
+        method: 'get',
+      }).then(({ data }) => {
+        if (data && data.code === 0) {
+          this.communityTitle = data.config ? data.config.paramValue : '新的物业小区工单上报';
+        } else {
+          this.$message.error(data.msg);
+        }
+      });
+    },
+
+    // 获取校园安全上报title
+    getCampusTitle() {
+      this.$http({
+        url: this.$http.adornUrl(`/sys/config/infoByKey?key=XYAQ_TK`),
+        method: 'get',
+      }).then(({ data }) => {
+        if (data && data.code === 0) {
+          this.campusTitle = data.config ? data.config.paramValue : '新的校园工单上报';
+        } else {
+          this.$message.error(data.msg);
+        }
+      });
+    },
+
+    // 建立websocket连接
+    establishConnection: async function establishConnection() {
+      const userInfo = await this.getUserInfo()
+      const platformId = userInfo.platform.id
+      const userId = userInfo.user.userId
+
+      // 1. 创建基于SockJs的stomp客户端
+      const client = Stomp.over(new SockJS(window.SITE_CONFIG.websocket))
+
+      // 2. 客户端建立连接
+      client.connect({}, success => {
+        // 3-A. 订阅平台信息
+        client.subscribe(`/platform/${platformId}/message`, ({ body }) => {
+          const message = JSON.parse(body).content
+          if (message.includes('human')) {
+            // a. 人
+            this.apix(`${ window.SITE_CONFIG.baseUrl }/risk/riskhumanalarm/info?id=${ message.split('_')[3] }`).then(response => {
+              if (response.code === 0) {
+                const list = response.riskHumanAlarm
+                const text =  list
+                              ? `
+                                  <div style='display: flex padding-right: 2vw'>
+                                    <img
+                                      style='margin-right: 1vw width: 50px height: 50px'
+                                      src='${ list.smallPicUrl }'
+                                      alt
+                                    >
+                                    <span style='flex-grow: 1'>
+                                      在${ list.cameraName }抓拍到${ list.listLibName }${ list.humanName }
+                                    </span>
+                                  </div>
+                                `
+                              : '抓拍数据有误'
+                this.$notify.info({
+                  title: '抓拍到新的数据',
+                  dangerouslyUseHTMLString: true,
+                  message: text,
+                  position: 'bottom-right',
+                  duration: 0,
+                })
+              }
+            })
+          } else if (message.includes('vehicle')) {
+            // b. 车
+            this.apix(`${ window.SITE_CONFIG.baseUrl }/risk/riskvehiclealarm/info?id=${ message.split('_')[3] }`).then(response => {
+              if (response.code === 0) {
+                const list = response.riskVehicleAlarm
+                const text =  list
+                              ? `
+                                  <div style='display: flex padding-right: 2vw'>
+                                    <img
+                                      style='margin-right: 1vw width: 50px height: 50px'
+                                      src='${ list.picVehicle }'
+                                      alt
+                                    >
+                                    <span style='flex-grow: 1'>
+                                      在${ list.cameraName }抓拍到车牌号为${ list.plateInfo }的车辆
+                                    </span>
+                                  </div>
+                                `
+                              : '抓拍数据有误'
+                this.$notify.info({
+                  title: '抓拍到新的数据',
+                  dangerouslyUseHTMLString: true,
+                  message: text,
+                  position: 'bottom-right',
+                  duration: 0,
+                })
+              }
+            })
+          } else if (message.includes('violation')) {
+            // c. 违规
+            this.apix(`${window.SITE_CONFIG.baseUrl}/violation/findById?id=${message.split('_')[3]}`).then(response => {
+              if (response.code === 0) {
+                const list = response.data
+
+                let type = ''
+                switch (list.intelligentType) {
+                  case '0':
+                    type = '未违规'
+                    break
+                  case '1':
+                    type = '店外经营'
+                    break
+                  case '2':
+                    type = '游摊小贩'
+                    break
+                  case '3':
+                    type = '占道经营'
+                    break
+                  case '4':
+                    type = '乱堆物堆料'
+                    break
+                  case '5':
+                    type = '非机动车'
+                    break
+                  case '6':
+                    type = '户外广告'
+                    break
+                  case '7':
+                    type = '打包垃圾'
+                    break
+                  case '8':
+                    type = '违规撑伞'
+                    break
+                  case '9':
+                    type = '垃圾箱满溢'
+                    break
+                  case '10':
+                    type = '垃圾箱满溢'
+                    break
+                  case '11':
+                    type = '暴露垃圾'
+                    break
+                  case '12':
+                    type = '沿街晾晒'
+                    break
+                  case '2000':
+                    type = '违章停车'
+                    break
+                  default:
+                    type = '未知'
+                }
+
+                const text =  list
+                              ? `
+                                  <div style='display: flex padding-right: 2vw'>
+                                    <img
+                                      style='margin-right: 1vw width: 50px height: 50px'
+                                      src='${list.picUrl}'
+                                      alt
+                                    >
+                                    <span style='flex-grow: 1'>
+                                      在${list.orgName}抓拍到有${type}的现象
+                                    </span>
+                                  </div>
+                                `
+                              : '抓拍数据有误'
+                this.$notify.info({
+                  title: '抓拍到新的数据',
+                  dangerouslyUseHTMLString: true,
+                  message: text,
+                  position: 'bottom-right',
+                  duration: 0,
+                })
+              }
+            })
+          } else if (message.includes('report')) {
+            // d. 报告
+            const text =  `
+                            <a href="${ window.SITE_CONFIG.baseUrl.slice(0, -4) }/#/word/manager/wordmanager">
+                              ${ message.split('_')[2] === 'null' ? '请注意！发现' : `${ message.split('_')[2] }上报了` }${ message.split('_')[3] }工单
+                            </a>
+                          `
+            this.$notify.info({
+              title: '有新的工单上报',
+              dangerouslyUseHTMLString: true,
+              message: text,
+              position: 'bottom-right',
+              type: 'warning',
+              duration: 0,
+            })
+          } else if (message.includes('community')) {
+            // e. 小区
+            const text =  `
+                            <a href="${window.SITE_CONFIG.baseUrl.slice(0, -4)}/#/risk/propertyDistrict/propertyDistrict">
+                              ${ message.split('_')[2] === 'null' ? '群众' : message.split('_')[2] }上报了${ message.split('_')[3] }工单
+                            </a>
+                          `
+            this.$notify.info({
+              title: this.communityTitle,
+              dangerouslyUseHTMLString: true,
+              message: text,
+              position: 'bottom-right',
+              type: 'warning',
+              duration: 0,
+            })
+          } else if (message.includes('school')) {
+            // f. 学校
+            const text =  `
+                            <a href="${ window.SITE_CONFIG.baseUrl.slice(0, -4) }/#/risk/campusPeriphery/campusPeriphery">
+                              ${ message.split('_')[2] === 'null' ? '群众' : message.split('_')[2] }上报了${ message.split('_')[3] }工单
+                            </a>
+                          `
+            this.$notify.info({
+              title: this.campusTitle,
+              dangerouslyUseHTMLString: true,
+              message: text,
+              position: 'bottom-right',
+              type: 'warning',
+              duration: 0,
+            })
+          } else if (message.includes('crowd')) {
+            // g. 人群
+            this.apix(`${ window.SITE_CONFIG.baseUrl }/vcm/riskCrowdAlarm/info?id=${ message.split('_')[3] }`).then(response => {
+              if (response.code === 0) {
+                const list = response.riskCrowdAlarm
+                const text =  list
+                              ? `
+                                  <div style='display: flex padding-right: 2vw'>
+                                    <img
+                                      style='margin-right: 1vw width: 50px height: 50px'
+                                      src='${ window.SITE_CONFIG.baseUrl.slice(0, -4) }${ list.picVehicle }'
+                                      alt
+                                    >
+                                    <span style='flex-grow: 1'>
+                                      在${ list.cameraName }人群密度已达到${ list.crowdCount }
+                                    </span>
+                                  </div>
+                                `
+                              : '抓拍数据有误'
+                this.$notify.info({
+                  title: '有新的抓拍数据',
+                  dangerouslyUseHTMLString: true,
+                  message: text,
+                  position: 'bottom-right',
+                  duration: 0,
+                })
+              }
+            })
+          } 
+        })
+
+        // 3-B. 订阅用户信息
+        client.subscribe(`/topic/${userId}/message`, ({ body }) => {
+          const message = JSON.parse(body)
+          this.$notify({
+            title: "有新的回复信息",
+            message: `${message.name}回复了内容${message.content}`,
+            dangerouslyUseHTMLString: true,
+            position: "bottom-right",
+            type: "warning",
+            duration: 0,
+          })
+        })
+      })
+
+      // 4. 断线检测重连
+      const reconnect = setInterval(() => {
+        try {
+          client.send('/platform/check', {}, JSON.stringify({ to: platformId }))
+        } catch(error) {
+          this.establishConnection()
+          clearInterval(reconnect)
+        }
+      }, 10000)
+    },
+  },
+
+  created() {
+    this.establishConnection()
+  }
+}
+</script>

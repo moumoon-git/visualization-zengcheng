@@ -1,0 +1,47 @@
+/*
+ * @Author: your name
+ * @Date: 2021-07-14 17:00:24
+ * @LastEditTime: 2021-08-28 16:55:54
+ * @LastEditors: your name
+ * @Description: In User Settings Edit
+ * @FilePath: \sioc-webd:\visualization-zengcheng\static\js\config.js
+ */
+;(function () {
+  window.SITE_CONFIG = {};
+  // window.SITE_CONFIG['baseUrl'] ='http://192.168.3.126:8849/ser' //rl
+  // window.SITE_CONFIG['baseUrl2'] ='http://192.168.3.208:8888/ser:8849' //rl
+  // window.SITE_CONFIG['baseUrl'] ='http://192.168.3.220:8848/ser' //rw
+  // window.SITE_CONFIG['baseUrl2'] ='http://192.168.3.220:8848/ser:8849' //rw
+//   window.SITE_CONFIG['baseUrl'] ='http://www.zczhzl.cn/ser' // 增城
+  window.SITE_CONFIG['baseUrl'] ='http://scg.zczhzl.cn/ser' // 增城
+  // window.SITE_CONFIG['baseUrl'] ='http://192.168.3.237:8888/ser' // 增城 http://scg.zczhzl.cn/ser 
+//   window.SITE_CONFIG['baseUrl'] ='http://192.168.3.237:8900/ser'
+//   window.SITE_CONFIG['baseUrl'] ='http://192.168.3.251:8849/ser' // shaozan
+  // window.SITE_CONFIG['baseUrl'] = 'http://172.16.149.125/ser';  // huawei
+  // window.SITE_CONFIG['baseUrl'] = "http://192.168.3.113:8848/ser" // chenbin
+//   window.SITE_CONFIG['baseUrl'] = 'http://192.168.3.242:8849/ser';  // shaozan
+//   window.SITE_CONFIG['baseUrl'] = 'http://192.168.3.126:8849/ser';  // yuanlinqing
+  // window.SITE_CONFIG['baseUrl'] = 'http://192.168.3.38:8888/ser';  // hudaiquan
+//   window.SITE_CONFIG['baseUrl'] = 'http://scg.chinaemt.com/ser';
+  // window.SITE_CONFIG['baseUrl'] = 'http://120.24.174.5:8849/sert';
+  window.SITE_CONFIG['baseUrl2'] ='http://219.135.166.218/ser/ser:8849' // 增城
+  // window.SITE_CONFIG['websocket'] = 'http://scg.zczhzl.cn/websocket/';
+  window.SITE_CONFIG['websocket'] = 'http://192.168.3.38:8666/endpointOyzc';
+  window.SITE_CONFIG['websocket_phone'] = 'ws://localhost:9529';
+  // window.SITE_CONFIG['baseUrl'] ='http://192.168.3.55:8848/ser' // wy
+  // window.SITE_CONFIG['baseUrl2'] ='http://192.168.3.55:8848/ser/ser:8849' // wy
+
+
+  window.SITE_CONFIG['cloudUrl'] = 'http://192.168.3.237:8888'; // http://scg.zczhzl.cn
+  // window.SITE_CONFIG['cloudUrl'] = 'http://scg.chinaemt.com';
+  // window.SITE_CONFIG['baseUrl'] ='http://114.115.223.113/ser' // 华为
+  // window.SITE_CONFIG['baseUrl'] ='http://114.115.146.59/ser' // 华为
+  // window.SITE_CONFIG['baseUrl'] ='http://114.115.219.183/ser' // 华为
+  // window.SITE_CONFIG['baseUrl'] ='http://114.115.223.113/ser' // 华为
+  // window.SITE_CONFIG['baseUrl'] ='http://test02.huaweiopenlab.com/ser' // 华为
+  // window.SITE_CONFIG['baseUrl'] = 'http://47.115.24.97/ser'; // 沙河
+  // window.SITE_CONFIG['baseUrl2'] = 'http://47.115.24.97:8849/ser'; // 沙河
+  // window.SITE_CONFIG['baseUrl'] ='http://scg.chinaemt.com/ser' // 服务器
+  // window.SITE_CONFIG['baseUrl2'] ='http://scg.chinaemt.com:8849/ser' // 服务器
+
+})();

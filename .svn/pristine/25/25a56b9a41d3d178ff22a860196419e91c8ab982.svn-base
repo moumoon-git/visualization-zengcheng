@@ -1,0 +1,185 @@
+<template>
+    <div class="trackCamera_wrap">
+
+      <div class="tabBtn" v-show="!xjInfoFlag">
+        <div :class="activeFlag?'active':''" @click="duij">
+          <img v-if="activeFlag" src="../../../assets/images/tabLeft.png" alt="">
+          轨迹
+        </div>
+        <div :class="!activeFlag?'active':''" @click="zpxj">
+          <img v-if="!activeFlag" src="../../../assets/images/tabRight.png" alt="">
+          抓拍相机排行
+        </div>
+      </div>
+
+      <div class="trackCamera_title" v-show="xjInfoFlag">
+        <div>{{cameraData.name}}</div>
+        <div>
+          <span>抓拍次数</span>
+          <span>{{cameraData.alarmCount}}</span>
+        </div>
+      </div>
+
+        <div v-show="activeFlag" style="height: 593px;overflow: hidden;margin-top: 20px;">
+          <el-scrollbar style="height: 100%;width: 100%;">
+            <timeline ref="timeline" ></timeline>
+          </el-scrollbar>
+        </div>
+
+      <div v-show="!activeFlag" style="margin: 20px 17px ;" class="smDivBgr">
+        <rankingListxInit ref="rankingListxInits" @transfer="transfers"></rankingListxInit>
+      </div>
+
+
+    </div>
+</template>
+
+<script>
+  import rankingListxInit from "./rankingListx";
+  import timeline from "./timeline";
+  import bus from "../../../assets/js/bus";
+    export default {
+        name: "trackCamera",
+        data () {
+            return{
+                activeFlag:true,
+                xjInfoFlag:false,
+                data:[],
+                cameraData:{},
+                getBottomFlag:true,
+                timeLineData:[]
+            }
+        },
+        methods:{
+            duij () {
+                this.activeFlag = true
+            },
+            zpxj () {
+                this.activeFlag = false
+                let that = this
+                setTimeout(()=>{
+                    that.$refs.rankingListxInits.init(that.data)
+                })
+            },
+            transfers (item) {
+                console.log(item)
+                this.cameraData = item
+                this.xjInfoFlag = true
+                this.activeFlag = true
+                this.$emit('backBtn',item)
+            },
+            transfe (data) {
+                this.cameraData = data
+                this.xjInfoFlag = true
+                this.activeFlag = true
+            },
+            back () {
+                this.xjInfoFlag = false
+                this.activeFlag = true
+            },
+            init (timeLineData,CameraData) {
+                this.activeFlag = true
+                this.$refs.timeline.init(timeLineData)
+                // {cameraName:'',alarmcount:''}
+                if (CameraData) {
+                    CameraData.forEach(ele=>{
+                        ele.cameraName = ele.name
+                        ele.alarmcount = ele.alarmCount
+                    })
+                }
+                this.data = CameraData
+                this.timeLineData = timeLineData
+                this.scroll()
+            },
+            initConnect (data) {
+                this.timeLineData = this.timeLineData.concat(data)
+                this.$refs.timeline.init(this.timeLineData)
+                this.getBottomFlag = true
+            },
+            scroll () {
+                let scroll = document.getElementsByClassName('el-scrollbar__wrap')[0]
+                let _that = this
+                scroll.addEventListener('scroll', function (e) {
+                    if ((parseInt(e.target.clientHeight) + parseInt(e.target.scrollTop)) === parseInt(e.target.scrollHeight)) {
+                        console.log("到底")
+                        if (_that.getBottomFlag){
+                            _that.getBottomFlag = false
+                            _that.Timeout = setTimeout(function () {
+                                if (_that.$store.state.selectBtn == 'human') {
+                                    bus.$emit('Researchers','human')
+                                }else if (_that.$store.state.selectBtn == 'car') {
+                                    bus.$emit('Researchers','car')
+                                }
+                            },500)
+                        }
+                    }
+                })
+            },
+        },
+        mounted() {
+
+        },
+        components:{
+            timeline,
+            rankingListxInit
+        }
+    }
+</script>
+
+<style scoped>
+.trackCamera_wrap{
+
+}
+.tabBtn{
+  width: 221px;
+  height: 37px;
+  margin: auto;
+  background: url("../../../assets/images/tabBtnBgr.png")no-repeat;
+  display: flex;
+}
+.tabBtn>div{
+  position: relative;
+  width:110px;
+  height:35px;
+  margin-top: 1px;
+  z-index: 999;
+  color: #47A8C0;
+  line-height: 35px;
+  text-align: center;
+  font-size: 16px;
+  cursor: pointer;
+}
+.tabBtn>div>img{
+  position: absolute;
+  top: 0;
+  left: 0;
+  width:100%;
+  height:100%;
+  z-index: -1;
+}
+.tabBtn>.active{
+  color: #6FFAFD;
+}
+.trackCamera_title{
+  background: url('../../../assets/images/daf.png')no-repeat;
+  background-size: 100% 100%;
+  height:34px;
+  color: #99C9E7;
+  display: flex;
+  font-size: 16px;
+  align-items: center;
+  padding: 7px 8px 11px 24px;
+  justify-content: space-between;
+  box-sizing: border-box;
+}
+.trackCamera_title>div:nth-child(2)>span:nth-child(2){
+  color: #FFFFFF;
+  margin-left: 20px;
+}
+.trackCamera_wrap /deep/ .el-scrollbar__wrap{
+  overflow-x: hidden;
+}
+
+
+
+</style>

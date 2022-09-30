@@ -1,0 +1,659 @@
+<template>
+  <el-dialog class="link-man" :title="title" :visible.sync="visible" width="1100px" center append-to-body :close-on-click-modal="false" :modal="false">
+    <div class="custom-tree-node"></div>
+    <el-row :gutter="20">
+      <el-col :span="8">
+        <!-- <input v-model="search" placeholder="输入姓名、单位名搜索" @keyup.enter.native="onSearch">
+            <div icon="el-icon-search" @click="onSearch" style="width:20px;height:20px;color:white;"></div> -->
+          <span class="team-route-list-tool-search">
+              <input
+                  class="team-route-list-tool-search-inner"
+                  placeholder="输入姓名、单位名搜索"
+                  v-model="search"
+                  @keyup.enter.native="onSearch"
+              >
+              <span class="el-icon-search team-route-list-tool-search-button" @click="onSearch"></span>
+          </span>
+          <div class="link-man-department">
+            <el-scrollbar wrap-class="list" wrap-style="max-height:485px;overflow: none;" view-class="view-box" :native="false">
+              <el-tree
+                v-if="visible"
+                :data="treeData"
+                :props="treeProps"
+                @node-click="handelNodeClick"
+                ref="tree"
+                node-key="id"
+                style="padding-top: 10px;"
+                highlight-current
+                accordion
+                :default-expanded-keys="[indexKey]"
+                :filter-node-method="filterNode"
+              ></el-tree>
+            </el-scrollbar>
+          </div>
+      </el-col>
+      <el-col :span="8">
+        <!-- <el-input v-model="search" placeholder="输入姓名、单位名搜索" @keyup.enter.native="onSearch">
+          <el-button slot="append" icon="el-icon-search" @click="onSearch" style="padding: 12px 12px;"></el-button>
+        </el-input> -->
+        <div class="candidate" style="height: 540px;">
+          <el-checkbox-group v-model="nameList">
+            <el-checkbox
+              v-for="person in personList"
+              :disabled="person.openId=== null && person.mobile1 === null"
+              openId
+              :label="person.id"
+              :key="person.id"
+              @change="nameChanged(person.id)"
+              style="text-align: left;"
+            >{{ person.name }}</el-checkbox>
+          </el-checkbox-group>
+          <el-pagination small @current-change="handleCurrentChange" :page-size="pageSize" :current-page="currentPage" layout="total, prev, pager, next" :total="total"></el-pagination>
+        </div>
+      </el-col>
+      <el-col :span="8">
+        <div class="candidate" style="height: 540px;overflow: auto;">
+          <div class="header">
+            <span style="color:rgba(154,201,231,1);font-size: 16px;">已选择联系人</span>
+          </div>
+
+          <div style="padding-left: 10px;margin-top: 10px;text-align: left;">
+            <!-- <el-tag
+              v-for="choose in chooseList"
+              :key="choose.id"
+              closable
+              @close="chooseChanged(choose)"
+              style="text-align: left;"
+              >{{ choose.name }}</el-tag
+            >-->
+            <!-- 执行顺序 -->
+            <el-table :data="chooseList" :show-header="false" highlight-current-row style="width: 100%" @selection-change="handleSelectionChange">
+              <!-- <el-table-column type="selection" width="30px"></el-table-column> -->
+              <!-- 当前项的索引值 -->
+              <!-- <el-table-column :type="chooseList" width="55px"></el-table-column> -->
+              <el-table-column prop="name" label="联系人名称" width="80px"></el-table-column>
+              <el-table-column label="操作">
+                <template slot-scope="scope">
+                  <el-button size="mini" :disabled="scope.$index===0" @click="moveUp(scope.$index,scope.row)">
+                    <i class="el-icon-arrow-up"></i>
+                  </el-button>
+                  <el-button size="mini" :disabled="scope.$index===(chooseList.length-1)" @click="moveDown(scope.$index,scope.row)">
+                    <i class="el-icon-arrow-down"></i>
+                  </el-button>
+                  <el-button class="el-icon-delete" style="color:#ff4949" size="mini" round @click="deleteEle(scope.row)"></el-button>
+                </template>
+              </el-table-column>
+            </el-table>
+          </div>
+        </div>
+        <!-- <div class="submit-btn">
+          <div @click="handleCommit">确定</div>
+        </div> -->
+        <div class="task-management-add-footer submit-btn">
+            <div class="task-management-add-footer-cancel" @click="visible=false;chooseList = [];personList = [];this.nameList = [];this.total = 0;this.selectedNode='';this.currentPage=1;">取消</div>
+            <div class="task-management-add-footer-submit" @click="handleCommit">确定</div>
+        </div>
+        <!--<el-button size="small" type="text" class="create-btn">新增联系人</el-button>-->
+      </el-col>
+    </el-row>
+  </el-dialog>
+</template>
+
+<script>
+import { log } from 'util'
+import draggable from 'vuedraggable'
+export default {
+  components: {
+    draggable
+  },
+  props: ['dynamicTag'],
+  data () {
+    const data = [
+      {
+        id: 0,
+        name: '联系人分组',
+        children: null
+      }
+    ]
+    return {
+      title: '',
+      visible: false, // 窗口是否可视
+      activePart: 'first',
+      search: '', // 搜索
+      takethedata: '', // 部门所有信息
+      topTreeID: '', // 部门ID
+      topTreeName: '', // 当前选中的部门
+      // 联系人分组树 数据
+      treeData: JSON.parse(JSON.stringify(data)),
+      // 子级显示的数据
+      treeProps: {
+        children: 'children', // 子树的名字
+        label: 'name' // 树的名字
+      },
+      chooseList: [],
+      personList: [], // 所有联系人对象数组
+      nameList: [], // 选中联系人id数组
+      total: 0, // 总条数
+      currentPage: 1, // 当前页
+      pageSize: 10, // 每页显示的条数
+      indexKey: 0,
+      name: '', // 当前触发该组件的事件
+      selectedNode: '' // 当前点击选中的部门及其子节点id数组
+    }
+  },
+  methods: {
+    filterNode (value, data) {
+      if (!value) return true
+      return data.name.indexOf(value) !== -1
+    },
+    getList () {
+      // this.$http({
+      //   url: this.$http.adornUrl('/mail/mailcontactor/list'),
+      //   method: 'post',
+      //   data: this.$http.adornData({
+      //     limit: this.pageSize,
+      //     page: this.currentPage,
+      //     search: this.search
+      //   })
+      // }).then(({ data }) => {
+      //   // console.log(data)
+
+      //   if (data && data.code === 0) {
+      //     // 详细联系人列表
+      //     this.personList = data.data.list
+      //     this.total = data.data.totalCount
+      //   }else{
+      //     this.$message.error(data.msg)
+      //   }
+      // })
+      let self = this
+      let request = {
+        url: '/mail/mailcontactor/list',
+        method: 'post',
+        data: {
+          limit: this.pageSize,
+          page: this.currentPage,
+          search: this.search,
+          groupId: this.selectedNode ? this.selectedNode : []
+        },
+        params: {},
+        header: {
+            'Content-Type': 'application/json;charset=UTF-8'
+        }
+      }
+      this.apix(request).then(({ data }) => {
+        if (data && data.code === 0) {
+          // 详细联系人列表
+          self.personList = data.data.list
+          self.total = data.data.totalCount
+        } else if(data.code === undefined) {
+          // 详细联系人列表
+          self.personList = data.list
+          self.total = data.totalCount
+        }
+        else{
+          self.$message.error(data.msg)
+        }
+      })
+    },
+    handleCurrentChange (val) {
+      // console.log(val)
+      this.currentPage = val
+      this.getList()
+    },
+    onSearch () {
+      this.selectedNode = ''
+      this.currentPage = 1
+      this.getList()
+      this.$refs.tree.filter(this.search)
+    },
+    // 点击确认触发的事件
+    handleCommit () {
+      if (this.chooseList === '' || this.chooseList === null) {
+        this.$message({
+          message: '请选择',
+          type: 'warning'
+        })
+      } else {
+        let data = {
+          linkman: this.chooseList,
+          name: this.name
+        }
+        // console.log('this.chooseList和this.name',this.chooseList,this.name)
+        // 返回部门数据
+        this.$emit('OnchildByValue', data)
+        this.visible = false
+        // 点击确认之后
+        this.chooseList = []
+        this.personList = []
+        this.nameList = []
+        this.total = 0
+        this.selectedNode = ''
+        this.currentPage = 1
+      }
+    },
+
+    nameChanged (id) {
+      let index = this.nameList.indexOf(id) // 判断是复选框取消选项还是选中选项
+      if (index == -1) {
+        // 该名字从选中项中删除
+        for (let i in this.chooseList) {
+          if (this.chooseList[i].id == id) {
+            this.chooseList.splice(i, 1)
+            break
+          }
+        }
+      } else {
+        // 该名字添加到选中项中
+        for (let i in this.personList) {
+          if (this.personList[i].id == id) {
+            let data = JSON.parse(JSON.stringify(this.personList[i])) // 复制姓名列表中的对象保存在选中人对象数组中
+            data.verify = this.topTreeName
+            data.groupId = this.topTreeID // 当前所属部门id
+            this.chooseList.push(data)
+            return
+          }
+        }
+      }
+    },
+    // 点击树节点触发事件
+    handelNodeClick (data) {
+      this.currentPage = 1
+      this.topTreeName = data.name
+      let id = data.id
+      this.takethedata = data
+      this.topTreeID = id
+      this.search = ''
+      this.handleHTTPNodeData(data)
+    },
+    // 点击子节点 获取数据
+    handleHTTPNodeData (obj) {
+      let self = this
+      function findChilden (obj, list) {
+        list.push(obj.id)
+        let children = obj.children
+        if (children != null) {
+          children.forEach((item, index) => {
+            findChilden(item, list)
+          })
+        }
+      }
+      let selectedNode = []
+      findChilden(obj, selectedNode)
+      // 获取联系人请求
+      // this.$http({
+      //   url: this.$http.adornUrl('/mail/mailcontactor/list'),
+      //   method: 'post',
+      //   data: this.$http.adornData({
+      //     limit: this.pageSize,
+      //     page: 1,
+      //     groupId: selectedNode
+      //   })
+      // }).then(({ data }) => {
+      //   if (data && data.code === 0) {
+      //     // 详细联系人列表
+      //     this.personList = data.data.list
+      //     this.total = data.data.totalCount
+      //   }else{
+      //     this.$message.error(data.msg)
+      //   }
+      // })
+      this.selectedNode = selectedNode
+      let request = {
+        url: '/mail/mailcontactor/list',
+        method: 'post',
+        data: {
+          limit: this.pageSize,
+          page: 1,
+          groupId: selectedNode
+        },
+        params: {},
+        header: {
+            'Content-Type': 'application/json;charset=UTF-8'
+        }
+      }
+      this.apix(request).then(({ data }) => {
+        if (data && data.code === 0) {
+          // 详细联系人列表
+          self.personList = data.data.list
+          self.total = data.data.totalCount
+        } else if(data.code === undefined) {
+          // 详细联系人列表
+          self.personList = data.list
+          self.total = data.totalCount
+        }
+        else{
+          self.$message.error(data.msg)
+        }
+      })
+
+      // getList("/emergency/preparation/contactor/getList", datas).then(res => {
+      //   if (res) {
+      //     this.personList = res.data;
+      //     this.total = res.totalElements;
+      //   }
+      // });
+    },
+    // 点击添加联系人事件
+    handleAddContacts (url, title, name) {
+      let self = this
+      this.title = title || '请选择'
+      this.name = name
+      // 获取联系人部门请求
+      this.visible = true
+      // this.$http({
+      //   url: this.$http.adornUrl(url),
+      //   method: 'get',
+      //   param: this.$http.adornParams()
+      // }).then(({ data }) => {
+      //   // data 是获取到的所有数据
+      //   if (data && data.code === 0) {
+      //     this.treeData[0].children = data.data
+      //     // this.handleHTTPNodeData();
+      //     if (this.dynamicTag) {
+      //       this.chooseList = JSON.parse(JSON.stringify(this.dynamicTag))
+      //       let arrays = []
+      //       this.dynamicTag.forEach(function (data) {
+      //         arrays.push(data.id)
+      //       })
+      //       this.nameList = arrays
+      //     }
+      //   }else{
+      //     this.$message.error(data.msg)
+      //   }
+      // })
+
+
+      let request = {
+        url,
+        method: 'get',
+        params: {}
+      }
+      self.apix(request)
+      .then(({ data }) => {
+        // data 是获取到的所有数据
+        if (data && data.code === 0) {
+          self.treeData[0].children = data.data
+          // this.handleHTTPNodeData();
+          if (self.dynamicTag) {
+            self.chooseList = JSON.parse(JSON.stringify(self.dynamicTag))
+            let arrays = []
+            self.dynamicTag.forEach(function (data) {
+              arrays.push(data.id)
+            })
+            self.nameList = arrays
+          }
+        } else if(data.code === undefined) {
+          self.treeData[0].children = data
+        } else{
+          self.$message.error(data.msg)
+        }
+      })
+    },
+
+    dynamicTags () {
+      this.chooseList = []
+      this.personList = []
+      this.nameList = []
+    },
+    deleteEle (ele) {
+      this.chooseList.splice(this.chooseList.indexOf(ele), 1)
+      let index = this.nameList.indexOf(ele.id)
+      if (index !== -1) {
+        this.nameList.splice(index, 1)
+      }
+    },
+    // 选择复选框数据
+    handleSelectionChange (val) {
+      this.multipleSelection = val
+    },
+    // 上移
+    moveUp (index, row) {
+      var that = this
+      if (index > 0) {
+        let upDate = that.chooseList[index - 1]
+        that.chooseList.splice(index - 1, 1)
+        that.chooseList.splice(index, 0, upDate)
+      } else {
+        // alert('已经是第一条，不可上移')
+      }
+    },
+    // 下移
+    moveDown (index, row) {
+      var that = this
+      if (index + 1 === that.chooseList.length) {
+        // alert('已经是最后一条，不可下移')
+      } else {
+        let downDate = that.chooseList[index + 1]
+        that.chooseList.splice(index + 1, 1)
+        that.chooseList.splice(index, 0, downDate)
+      }
+    }
+  }
+}
+</script>
+
+<style scoped>
+.team-route-detail-tool-search,
+.team-route-list-tool-search {
+    width: 304px;
+    height: 27px;
+    border: 1px solid rgba(63,146,254,1);
+    border-radius: 3px;
+    -webkit-box-sizing: border-box;
+    box-sizing: border-box;
+    background: transparent;
+    font-size: 14px;
+    font-weight: 400;
+    color: rgba(0,242,255,1);
+    outline: none;
+    position: absolute;
+    left: 240px;
+    margin-top: 14px; 
+}
+.team-route-detail-tool-search-inner,
+.team-route-list-tool-search-inner {
+    background: transparent;
+    border: none;
+    outline: none;
+    width: 260px;
+    height: 26px;
+    line-height: 26px;
+    color: white;
+    padding: 0;
+    padding-left: 11px;
+}
+.team-route-detail-tool-search-button,
+.team-route-list-tool-search-button {
+    color: rgba(107, 137, 249, 1);
+    cursor: pointer;
+    position: absolute;
+    right: 8px;
+    top: 5px;
+    display: inline-block;
+    width: 14px;
+    height: 14px;
+    line-height: 14px;
+    font-size: 14px;
+}
+.task-management-add-footer{
+    position: absolute;
+    bottom: 0px;
+    right: 0px;
+    padding-bottom: 30px;
+    padding-right:25px;
+}
+.task-management-add-footer-cancel,
+.task-management-add-footer-submit {
+    background-size: 100% 100%;
+    width: 72px;
+    height: 37px;
+    line-height: 35px;
+    text-align: center;
+    cursor: pointer;
+    display: inline-block;
+}
+.task-management-add-footer-cancel {
+    margin-right: 10px;
+    background: no-repeat url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEgAAAAlCAYAAADhh6/DAAAE7klEQVRoge1azY4kNQy2090j5jASIPEjELsvAAd+DvAyHLnwarwFBy6IA0IgsSdAoAWkFdIu7DDTnQ/FcRInlarunZk0yzDuqanOT3Xsz47juMIfffYF3XY6eesNK+H7eh1E69Dp/I/1J7sLR24FeYaZiFy4g4hjmdnH+tQmHUu7vRNpPaXyQIL86T+OZVB1f/rgoTSvz07vu9OTe5T7RwK4KnsQOQfavHT6uQAEz/Tk15OvA1ahnYh2TLwDYRe+a91W717rdqY8uVjQI//qO48xEp/fvjkTlYGgqpu9VvG6TO1rva+YeAWCtkvdC69/ePIpJQviqGUrdACnFRrpexAeRW9yMTMAEKvJIKuUhgKkwFTjKi8w/JHy7PUxVlkozgNw9ZMBB61xI5m/DXQH0B4qALGYVmtqyTyJGjPOT8kUZS4PwbYfjdpxDU9seW5lsXLm/lzKV7Ygni5Pw/3NgdQqusfrwbTOHdEVMKGvHhlNI0e9aTPr2q7lo5MYjSzzgOXRUpIhydQJRKBYCHUtiOPHPsh2oMY8K3Amg42nVmuJP1geOvyzKfOclU0AOsQcYT6WMVkyjfVcx7QPJTuGjl0N2+V1hnr8VgBVHRZkYwt+uYtrE10k4xuPTx4jj4tcWznpRWVVYlf9vqoAqpBuAN+nAaA8+2/4oDSm8YnzfafClWe1sP3z8kci+vIuDpqhy0fnP5BdxSQ8151fs42oyJgxmWflnjSX4yXZBQ7eagATB9vyY+s71gWzoiUnf/046P9AFz/9UixItW2jZXF71MzZapVSjaQ4iBorspoYRToGJ+tXHjDh0bQXY0lJm2KF2nc5DrqjQhmgGCr1l8KZIHFSx+aTm8YT98Ze4nOuPf+OiZGtBaF8QXXvtVE93ZC2Hb1+o6kd10bS1iU0PFXbp16bAHT22stHE+S/SGJBpy+u7yfnVKUMjMNelE0tO29epxvCYWQ30tl6eP8+p81Emt+otksBoA82p+t7t9oMrkFhmX8vPW5yzWQDqCbfq40oyzjKfDZ9j7nfgA1JOBpHqkOH75pt43MaDEw+6GpUpUSqgToR9wjKU2qS9Oh+f2ayqxh3Vh5u/coMzSbbjkTTpNfC+JW/avqZtzFCey1obudr21pHJ3V7/PqNEjp8trx39HtIKFICRRFpXqg8h9vkeLQwoNlVtJoYSBPLj2sx0FmhKlm6cjZbpH1bjb0QL2nhGMHiDYy/2MmVXuj5oPIr/UWpJL51PWuykuMRMmPkCLpkFakHwFJCLcVCqXyTm9VjOuV9dGO8VD7o2bkobzdM6qB0wBFAM2Mkv2f3Yld5cXDVhNnzZCHXpYNlsct8OhYCc09X/faiX34e3qpaWuLVlu1xmVJWaeL5oBhHbPT4SzDRrSyTXGYMCC1gTutqzxgzeDxx2MNQ4DK1bPZQm825oQoQJo5nhpgcACmDEPAIZ4U2sAAFevNd9zE78roqgGLCNU1qr9lsbM+3D/56dPF9wDi0O+eDFwA72QQhnkYjUCzTaMt65e3HLBh42URxVCMzoiTsvZP63O6FO5Y+kUvynhx5jv1AvNvxRg+MRYDcyj30RBsBIg6HAlReNLF9uvvuye+X34plBevhcCLJ+QASfDxEJfoIv1HecI+eesKhHPoTIIqgAo4PHFX1TkFyos4Inqgz1EV103r7t/uZiOgfp2ar+ju0YF0AAAAASUVORK5CYII=');
+}
+.task-management-add-footer-submit {
+    background: no-repeat url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEgAAAAlCAYAAADhh6/DAAAFO0lEQVRoge1aUY4cNRB91T07s9nd8JGNQEKKxAU4ABfgg/PwTYBvjpIr5AMhxAWQUMQnErCRkEIIZHdm2oXKLtvVbnfvDGxPFJja7fG47J6qeq6pcnmaPnryHf7rtHz0vrXwcwCPdzV5IS/XLxbcrRs0LXsmEYBGWgYo9Ilc4McxPzGP2xZQPmJ/RmL/ry8U+oxe+/rHX/3wyYMLnFxe7KWLB4gd4dXV8isAvwFYA7gh0A2DrwU/ABtt13HcvN9Uri2BttK+++Ef3Zz4PP/+fit2MHih9pxUrmW43Ap4qe9xqvNOCXTK4BWAlY5dPvrknU8TQBRW2Rou4ETjt6bdqvGOw/q4eBFRx8xM6kKclnReYrA6KqkjMasurdGPVedt8H9/bVS/DYMboyQrBp7KgSMVWDRHQKYpA0QeNfuV0BDn3Re25RT+PENc2oTn8HdoKuSS6pR0VJ0Htlg7ExJ0Bx5Ew/BCRtDssadCUWa50DVdd6ZFmsg9A/NnZ48ZeEaAWkY935Hmdu0fnLzT+DTPbgycaEO0qbKYrFh4qnoQhT97I1lBhXuSZon8DcxAHwIpK4vDGvW/XoXO8T2ZPo152QCgXdyRzZ+50b9a7/k3rr0rWRnMAyzquo5QTd8eQL0JE7aRBT+3PrSR0m2fcWekMpJcNvoYHScXq2d2b96XPYB6SBeA37YCzPneNxGDokwTE8fnDo3L92pnffWnNI+P+6ARur76yw+kLEZEoTzghHC5P4jzYKN84plVTNGaef5SQyqL4utT6pPZVPMuNhlNi2w67qR3ofVPP2cPiqttdsuyMnEfRGYeUurUFbE8NqnErsRcZIrU7PrGTZKOqX5GHkqHNtkLde70PuhImRJAYatUDRljm8QBL24wK9uAeZ2oIntKT/O+Ui9RimEYO+4w2/HId+UY+kGQY9mRhg5YsBo9tU4gmK98OS+Ss3oWYzlI33/vwQFMeHvJe9D5w6UPbBKcLJI2YBcWFnk11K2peB0WhLORLaST91B2ozGdzUmk5Xm+DfIC0BdnD1f/J6fYiyTNfxZvkJRpvGVwyORXSDO/gJzSeHAZ0hVMZ8MHtKN3Fk5MNOARpZhk7Sk2xKQYpA9eGCFTGcceRtX4g/vj2czcFM+gBkdV43btcqiXxnoAVTIPFdnJfkCpRCn4kKeKpczyVLGnb7RHbStjE8YAynOGN1RHrSCbZj1v/jKsp1MtTXNf2cptw7qsZOSNojdp3KhUAOYsleKTLzb6VQWVKzEjDWSFXMzWHrbZlWjCzqJEuq3UKI9OB7FoakN4iM3iHvLHbJhUMgFU7oEGwupJKQvldDadR+kACBkZ6avOvZhTOd+YBnWuYvVN/NQzRnemSy8G7SG03IVGzyHzo+LgYG0WyjLivo1s0hgpnCf1GotB+wD0ttNttiQsbJpf6uMgnfKljVerbVNchP4eo+wfkqZ0KfVu1KZWbY1Xi/i4DBcAMfgcwGu5WU5E9DGSmBvFfZ3Od/EIRB8nkX6ngc3/9KKnk6M/xt0lmc1ekq19DwKDSxD8RaAABGHJzEsCrRh8T54REixiHKePv3m2V6a5frF+9ur59Q9o5JkgdE3jHAgdNXAgFp7zv06FvlRFboeP/cfEIilIaaTM0n7DTlq0zjXCb3W8YUet8MHUej5DLGjhfH8h/a6j89VF98G9y81ZbSc9Sje/b759+cvN1/KAEsCdAOPQCEgdO3Qkz+k13LGAxAJQeoBpThIgGtZWDY3gtOwQgAh8AWShIC2YFSzngZHrxIU5Z9ub5ikA/A2c2cw22HopXwAAAABJRU5ErkJggg==');
+}
+.link-man >>> .el-dialog--center {
+  background: rgba(10, 29, 81, 0.7);
+  border: 1px solid rgba(59, 135, 227, 1);
+}
+.link-man >>> .el-dialog__title {
+  color: rgba(0, 242, 255, 1);
+  font-size: 18px;
+}
+.link-man >>> .el-dialog__headerbtn {
+  width:20px;
+height:20px;
+line-height: 20px;
+text-align: center;
+color: white;
+border:1px solid rgba(255,255,255,1);
+border-radius: 50%;
+padding-left: 1px;
+}
+.link-man >>> .el-dialog__close {
+  color: white;
+  text-align: center;
+}
+.el-input >>> .el-input__inner {
+  padding: 0 4px;
+}
+.custom-tree-node {
+  margin: 0 auto;
+  margin-top: -20px;
+}
+.candidate {
+  height: 500px;
+  border-radius: 5px;
+  padding-top: 10px;
+  background:rgba(23,130,230,0.29);
+  border-radius:3px;
+  color: white;
+  margin-top: 4px;
+  box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1);
+}
+.candidate .el-checkbox {
+  color: white;
+}
+.el-pagination {
+  color: white;
+  position: absolute;
+  bottom: 60px;
+}
+.candidate >>> .el-pagination__total {
+  color: white;
+}
+.el-pagination .el-pager li {
+  background: transparent;
+}
+.candidate >>> .btn-next, .candidate  >>> .btn-prev {
+  color: white;
+  background: transparent;
+}
+.candidate >>> tr,
+.candidate >>> td,
+.candidate >>> .el-table,
+.candidate >>> .el-table::before {
+  background: transparent;
+  border: none;
+  color: rgba(154, 201, 231, 1);
+}
+.selected {
+  min-height: 380px;
+}
+
+.submit-btn {
+  margin-top: 20px;
+  text-align: center;
+  color: rgba(17, 184, 254, 1);
+  font-size: 16px;
+  position: relative;
+  padding-bottom: 0;
+  padding-right: 0px;
+  right: -87px;
+}
+.submit-btn .task-management-add-footer-cancel{
+  color: white;
+}
+.create-btn {
+  float: right;
+  margin: 10px;
+}
+.el-checkbox-group {
+  height: 500px;
+  overflow: auto;
+}
+.el-checkbox-group::-webkit-scrollbar {
+    background: transparent;
+    width: 3px;
+    height: 3px;
+}
+.el-checkbox-group::-webkit-scrollbar-thumb {
+    background: #518ce5;
+    border-radius: 6px;
+}
+.el-checkbox-group >>> .el-checkbox {
+  display: block;
+  margin-top: 5px;
+  margin-left: 10px;
+}
+
+.el-tag {
+  margin-right: 10px;
+  margin-bottom: 10px;
+}
+
+.el-scrollbar >>> .el-scrollbar__wrap {
+  overflow-x: hidden;
+}
+
+.el-tree {
+  min-width: 100%;
+  display: inline-block !important;
+}
+
+.el-tree--highlight-current
+  >>> .el-tree-node.is-current
+  > .el-tree-node__content {
+  background-color: #c0c0c0;
+}
+
+.header {
+  box-sizing: border-box;
+  padding: 12px 18px;
+  color: #303133;
+  font-size: 14px;
+}
+.el-scrollbar {
+  height: 500px;
+  margin: 0 auto;
+  background: transparent;
+  color: white;
+}
+.el-tree {
+  background: transparent;
+  color: white;
+}
+.link-man-department {
+  height: 513px;
+  background:rgba(23,130,230,0.29);
+  border-radius:3px;
+  margin-top: 40px;
+}
+.link-man .team-route-list-tool-search {
+  left: 10px;
+  top: -10px;
+  width: 336px;
+}
+.link-man .team-route-list-tool-search .team-route-list-tool-search-inner {
+  width: 300px;
+}
+
+</style>

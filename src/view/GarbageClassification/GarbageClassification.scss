@@ -1,0 +1,208 @@
+@font-face {
+    font-family: 'SourceHanSansCN-Regular';
+    src: url('./font/SourceHanSansCN-Regular.otf') format('opentype')
+}
+// 布局和标题
+.gc__container {
+    display: flex;
+    width: 1920px;
+    height: 1005px;
+    * {
+        font-family: 'SourceHanSansCN-Regular';
+    }
+    & > div {
+        position: relative;
+    }
+    .gc__left,
+    .gc__right {
+        width: 450px;
+    }
+    .gc__middle {
+        flex: 1;
+    }
+    .gc__title {
+        height: 32px;
+        line-height: 32px;
+        padding: 0 0 0 14px;
+        color: #6FFAFD;
+        font-size: 18px;
+        background: no-repeat url('./img/title.png') left;
+    }
+}
+// 左边栏
+.gc__left {
+    .gc__title {
+        margin: 0 0 0 34px;
+    }
+    // 垃圾分类点位数量
+    &__dashboard {
+        padding: 10px 0 10px 50px;
+        & > * {
+            margin: 0 18px 0 0;
+            display: inline-block;
+        }
+    }
+    &__banner {
+        width: 100%;
+        margin-bottom: 20px;
+        &__item {
+            width: 396px;
+            height: 74px;
+            margin: 20px 0 0 28px;
+            background: no-repeat center/100% 100% url('./img/banner.png');
+            display: flex;
+            align-items: stretch;
+            & > span {
+                flex: 1;
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                padding-top: 5px;
+                & > div {
+                    text-align: center;
+                }
+                & > div:first-child {
+                    font-family: 'DCM';
+                    font-size: 34px;
+                    // 渐变字体
+                    color: #69E7B4;
+                    background: linear-gradient(180deg, #69E7B4 0%, #9AC9E7 30%);
+                    -webkit-background-clip: text;
+                    -webkit-text-fill-color: transparent;
+                    & > span {
+                        font-size: 16px;
+                    }
+                }
+                & > div:last-child {
+                    font-size: 12px;
+                    color: #EDF3FC;
+                }
+            }
+        }
+    }
+}
+// 中间栏
+.gc__middle {
+    // 上方气泡层
+    &__upper {
+        height: 610px;
+        margin: 30px 80px 0;
+        position: relative;
+        // 切换标签
+        &__tab {
+            position: absolute;
+            top: 0;
+            right: 0;
+            font-size: 0;
+            &__item {
+                display: inline-block;
+                height: 28px;
+                line-height: 28px;
+                text-align: center;
+                color: #99C9E7;
+                font-size: 17px;
+                border: 2px solid transparent;
+                padding: 0 8px;
+                margin: 0 0 0 5px;
+                user-select: none;
+                cursor: pointer;
+                &:hover {
+                    color: #FEFEFE;
+                }
+                &#{&}--active {
+                    color: #FEFEFE;
+                    border-color: #6FFAFD;
+                }
+            }
+        }
+    }
+    // 下方折线层
+    &__lower {
+        margin-top: 60px;
+        height: 300px;
+        display: flex;
+        justify-content: space-between;
+        &__item {
+            height: 100%;
+            width: 32%;
+            position: relative;
+            .gc__title {
+                position: absolute;
+            }
+        }
+    }
+}
+// 右边栏
+.gc__right {
+    margin: 30px 0 0 0;
+    &__upper {
+        height: 380px;
+    }
+    &__lower {
+        height: 590px;
+        margin: 0 0 0 20px;
+        &__detail {
+            width: 380px;
+            height: 214px;
+            margin-left: 21px;
+            padding-left: 10px;
+            background: rgba(72, 159, 248, .12);
+            overflow: auto;
+            &::-webkit-scrollbar {
+                width: 0;
+            }
+            &__item {
+                display: inline-block;
+                width: 85px;
+                vertical-align: top;
+                position: relative;
+                margin: 20px 10px 0 30px;
+                &__value {
+                    color: #ffffff;
+                    font-family: 'DCM';
+                    font-size: 32px;
+                }
+                &__name {
+                    font-size: 14px;
+                }
+                &::before {
+                    content: '';
+                    display: block;
+                    border-radius: 50%;
+                    width: 20px;
+                    height: 20px;
+                    position: absolute;
+                    left: -30px;
+                    top: 6px;
+                }
+                &::after {
+                    content: '';
+                    display: block;
+                    border-radius: 50%;
+                    width: 10px;
+                    height: 10px;
+                    position: absolute;
+                    left: -23px;
+                    top: 13px;
+                }
+            }
+            $colorArr: #049EFF, #A4E548, #FCD85C, #84DAFF, #E4998B, #D144C9, #4482EB, #FE660B, #46D0ED, #FEB00A;
+            @for $i from 1 through 10 {
+                .gc__right__lower__detail__item:nth-child(#{$i}) {
+                    .gc__right__lower__detail__item__name {
+                        color: nth($colorArr, $i);
+                    }
+                    &::before {
+                        border: 2px solid nth($colorArr, $i);
+                    }
+                    &::after {
+                        background: nth($colorArr, $i);
+                    }
+                }
+            }
+        }
+    }
+}
+.ie {
+    background: transparent !important;
+}

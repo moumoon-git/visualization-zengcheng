@@ -1,0 +1,335 @@
+<template>
+  <div id="app" v-if="visShow" >
+    <lightNav v-if="flag" ></lightNav>
+    <topNav v-if="!flag" ></topNav>
+    <router-view/>
+    <img v-if="!flag&&num==1" class="ZCApp" src="./assets/images/bg01.png" alt="">
+    <img v-if="!flag&&num==1" class="NewGeneralApp" src="./assets/images/bg02.jpg" alt="">
+    <img v-if="!flag&&num==2"  src="./assets/images/bg03.png" alt="">
+    <img v-if="!flag&&num==3"  src="./assets/images/bg_classification.png" alt="">
+    <img v-if="!flag&&num==4"  src="./assets/images/bg_disputes.png" alt="">
+    <WeatherGraph v-if="showWeatherGraph" :class="showWeatherGraph ? 'WeatherGraph-show' : 'WeatherGraph-hide'"></WeatherGraph>
+    <Rental/>
+  </div>
+</template>
+
+<script>
+import topNav from './view/common/top_nav'
+import lightNav from './view/common/lightNav'
+import Rental from './view/visual/visualTampl/tools/Rental/Rental'
+import WeatherGraph from './view/visual/visualTampl/WeatherGraph/WeatherGraph.vue'
+import Bus from '@/utils/bus.js';
+export default {
+  name: 'App',
+  data () {
+    return {
+      flag:false,
+      num:1,
+      visShow:false,
+      showWeatherGraph: false,
+    }
+  },
+  components:{
+      topNav,
+      lightNav,
+      Rental,
+      WeatherGraph
+  },
+  beforeMount(){
+       // 可视化不同于后台系统,所以path存在于存储中，进入和刷新都是读取location 和 sessionStorage中的内容
+      let blodStr = ''
+      blodStr = sessionStorage.search
+      if (!blodStr){
+        return
+      }
+      this.visShow = true
+      console.log(location.href)
+      // console.log(blodStr)
+      let boldArr = blodStr.split('&');
+      let token = boldArr[0].split('=')[1];
+      let platformId = boldArr[1].split('=')[1];
+      let type = boldArr[2].split('=')[1];
+      let allLoad = boldArr[3].split('=')[1];
+      this.$store.commit('token',token)
+      this.$store.commit('platformId',platformId)
+      this.$store.commit('type',type)
+      this.$store.commit('btnArray',blodStr.substr(blodStr.indexOf('allLoad')).split('=')[1].split('/'))
+      // allLoad= human  人/ car 车 / school 学校 / estate 小区
+      if (type == 'conduct') {
+          //ie?
+          if (!!window.ActiveXObject || "ActiveXObject" in window){
+              location.href = location.href.substr(0,location.href.lastIndexOf('/')+1) + 'command'
+              console.log(location.href.substr(0,location.href.lastIndexOf('/')+1) + 'command')
+          }else{
+              this.$router.push({path:'command'})
+          }
+      }else if(type == 'map'){
+          this.$router.push({path:'warnings'})
+      }else if(type == 'NewGeneral'){
+        this.$router.push({path:'NewGeneral'})
+      }else if(type == 'Outbreak'){
+        this.flag = true
+        this.$router.push({path:'Outbreak'})
+      }else if(type == 'barGraph'){
+        this.num = 2
+        this.$router.push({path:'barGraph'})
+      }else if(type == 'visual'){
+        this.$router.push({path:'visual'})
+      }
+      // 根据禅道需求 498 要同步两张可视化 差别不大，直接引用同一张（根据现场反馈因为标书需求不能去掉其中一个）
+      else if(type == 'BasicDataVisual'){
+        this.$router.push({path:'visual'})
+      }
+      /**
+       * @author tanjinfeng
+       * @date 2020-09-11
+       * @desc 新增垃圾分类页面
+       */
+      else if(type == 'GarbageClassification'){
+        this.num = 3
+        this.$router.push({path:'GarbageClassification'})
+      }
+      /**
+       * @author tanjinfeng
+       * @date 2020-10-29
+       * @desc 新增矛盾纠纷页面
+       */
+      else if(type == 'Disputes'){
+        this.num = 4
+        this.$router.push({path:'Disputes'})
+      }
+  },
+  mounted() {
+    Bus.$off('showWeatherGraph')
+    Bus.$on('showWeatherGraph', (data) => {
+      this.showWeatherGraph = data
+    })
+  },
+  beforeDestroy() {
+    Bus.$off('showWeatherGraph')
+  },
+}
+</script>
+
+<style  >
+  #app{
+    min-height: 100vh;
+    min-width: 1920px;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+  }
+  #app>img{
+    position: absolute;
+    width: 100%;
+    /* height: 100%; */
+    top: 0;
+    left: 0;
+    z-index: -1;
+  }
+  .ZCApp{
+
+  }
+  .amap-marker-label{
+    color:#fff
+  }
+  .amap-pl-pc .poi-more{
+    display: none;
+  }
+  .amap_lib_placeSearch{
+    background: transparent !important;
+    border: none;
+    color: #fff;
+  }
+  .amap_lib_placeSearch .poibox.active, .amap_lib_placeSearch .poibox.hover, .amap_lib_placeSearch .poibox:hover{
+    background: transparent;
+  }
+  .amap_lib_placeSearch_page,.amap-lib-infowindow{
+    background: transparent;
+    color: #fff;
+  }
+
+  .amap-content-body{
+    background: rgba(11,30,75,.8);
+  }
+  .amap_lib_placeSearch_list{
+    background: transparent !important;
+    color: #fff;
+  }
+  .amap_lib_placeSearch .poibox{
+    border-color: #0D79FF;
+  }
+  .amap_lib_placeSearch .poibox .poi-info p{
+    color: #fff;
+  }
+  .NewGeneralApp{
+    animation: NewGeneralBreatheFrom 4s linear infinite;
+  }
+  @keyframes NewGeneralBreatheFrom {
+    0%{opacity: .3;}
+    25%{opacity: .62;}
+    50%{opacity: 1;}
+    75%{opacity: .62;}
+    100%{opacity: .3;}
+  }
+  @font-face{
+    font-family: 'numStyle';
+    src: url('./assets/ttf/numStyle.eot'); /* IE9+ Compat Modes */
+    /*src: url('./assets/ttf/numStyle.woff2') format('woff2'), !* Super modern browsers *!*/
+    src: url('./assets/ttf/numStyle.woff') format('woff'), /* Modern browsers */
+    url('./assets/ttf/numStyle.ttf') format('truetype')
+  }
+  @font-face{
+    font-family: 'DCM';
+    src:url('./assets/ttf/DINCond-Medium.ttf') format('truetype')
+  }
+  @font-face{
+    font-family: 'Pang';
+    src: url('./assets/ttf/Pang.ttf') format('truetype')
+  }
+  @font-face {
+    font-family: 'SourceHanSansCN-Regular';
+    src: url('./view/GarbageClassification/font/SourceHanSansCN-Regular.otf') format('opentype')
+  }
+  body{
+    font-family: 'Microsoft YaHei';
+  }
+  .el-picker-panel{
+    background: none;
+    font-family: 'numStyle';
+    color: #fff;
+    background: rgba(21,61,150,.7);
+    border: 1px solid #3B90EE;
+  }
+  .el-picker-panel__sidebar {
+    background: transparent;
+    color: #fff;
+    border-color: #3B90EE;
+  }
+  .el-picker-panel__shortcut {
+    color: #fff;
+  }
+  .el-date-range-picker__content.is-left {
+    border-right: 1px solid #3B90EE;
+  }
+  .el-date-table td.in-range div{
+    background: none !important;
+  }
+  .el-date-table th{
+    font-family: "Microsoft YaHei";
+    color: #D9D5ED;
+    border-bottom-color: #3B90EE;
+  }
+  .el-date-table td.in-range div{
+    background: #ccc;
+  }
+  .el-select-dropdown{
+    background: url("./assets/images/xialakuang.png")no-repeat;
+    background-size: 100% 100%;
+    border: none;
+    width: 208px;
+    height: 232px;
+  }
+  .popper__arrow{
+    display: none !important;
+  }
+  .el-select-dropdown__item.hover, .el-select-dropdown__item:hover{
+    background: url("./assets/images/xuanze.png")no-repeat;
+    background-size: 100% 100%;
+  }
+  .el-select-dropdown__item.selected{
+    color: #fff;
+  }
+  .el-select-dropdown__item,.el-input__inner{
+    color: #9AC9E7;
+    font-size:16px;
+    font-weight:400;
+    color:rgba(154,201,231,1);
+  }
+  .el-picker-panel__icon-btn{
+    color: #fff;
+  }
+  .el-select-dropdown__wrap {
+    max-height: 248px;
+  }
+/* 浅蓝色标题 */
+.blueTitle{
+  background: url("./assets/images/titleTow.png")no-repeat;
+  width: 100%;
+  height: 32px;
+  color: #6FFAFD;
+  padding-left: 13px;
+  line-height: 32px;
+  box-sizing: border-box;
+}
+/* 深蓝色标题 */
+.blueTitleTow{
+  font-size:18px;
+  font-weight:500;
+  color:rgba(51,51,51,1);
+  position: relative;
+  padding-left: 7px;
+  box-sizing: border-box;
+}
+.blueTitleTow:before{
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width:3px;
+  height:100%;
+  background:rgba(63,146,254,1);
+}
+
+/* 下滑线标题 */
+.underlineTitle{
+  height: 28px;
+  width: 100%;
+  background: url('./assets/images/underlineTitle.png')no-repeat;
+  text-align: center;
+  line-height: 28px;
+  color: #D9D5ED;
+  font-size: 16px;
+  background-position: 13px 0;
+  font-weight:400;
+  margin-top: 10px;
+}
+/* div的背景 */
+.smDivBgr{
+  background: url("./assets/images/smBgr.png") no-repeat;
+  background-size: 100% 100%;
+  border: 1px solid rgba(21,61,150,1);
+}
+.smTitleBgr{
+  background: url("./assets/images/smTitleBgr.png")no-repeat;
+  background-size: 100% 100%;
+}
+.border_wrap{
+  background: url("./assets/images/loadingList_wrap.png")no-repeat;
+}
+.background_wrap{
+  background: url("./assets/images/loadingActive.png")no-repeat;
+  background-size: 100% 100%;
+}
+.amap-logo,.amap-copyright{
+  display: none !important;
+}
+
+</style>
+
+<style lang="scss">
+@keyframes slide-in-from-right {
+	from {
+		transform: translateX(100%);
+	}
+}
+.WeatherGraph {
+  &-show {
+    transform: translateX(0);
+	  animation: slide-in-from-right 0.8s ease-in-out;
+  }
+  &-hide {
+    transform: translateX(100%);
+  }
+}
+</style>

@@ -1,0 +1,574 @@
+<template>
+  <div class="search_wrap">
+    <!-- 多边形 -->
+    <ul class="search_deformation" v-if="types == 2">
+      <li @click="drawCircle">
+        <div class="oneY"></div>
+        <p>圆形检索</p>
+      </li>
+      <li @click="drawRectangle">
+        <div class="towF"></div>
+        <p>方形检索</p>
+      </li>
+    </ul>
+    <!-- 搜索 -->
+    <div
+      class="searchContent"
+      :style="{ 'padding-top': types == 1 ? '20px' : '0px' }"
+    >
+      <div v-if="types == 2">
+        <el-select
+          v-model="value"
+          multiple
+          collapse-tags
+          :filterable="false"
+          :popper-append-to-body="false"
+          placeholder="请选择"
+        >
+          <el-option
+            v-for="item in options"
+            :key="item.value"
+            :label="item.label"
+            :value="item.value"
+          >
+          </el-option>
+        </el-select>
+      </div>
+      <input
+        type="text"
+        v-model="serchAdd"
+        :style="{ width: types == 1 ? '160px' : '98px' }"
+      />
+      <button @click="serchVla">搜索</button>
+      <div
+        class="clear-search-button"
+        v-if="types === 1 && placeSearch"
+        @click="
+          placeSearch.clear()
+          placeSearch = ''
+        "
+      >清除</div>
+    </div>
+    <!-- 内容显示 -->
+    <div id="panel"></div>
+  </div>
+</template>
+
+<script>
+import allUrl from "../../../../assets/api/allApiUrl";
+export default {
+  name: "search",
+  data() {
+    return {
+      options: [
+        {
+          value: "0",
+          label: "应急队伍",
+        },
+        {
+          value: "1",
+          label: "应急物资",
+        },
+        {
+          value: "2",
+          label: "避难场所",
+        },
+        {
+          value: "3",
+          label: "防护目标",
+        },
+        {
+          value: "4",
+          label: "视频监控",
+        },
+      ],
+      value: [],
+      map: "",
+      serchAdd: "", //搜索
+      types: 1,
+      mouseTool: "",
+      center: "",
+      radius: "",
+      points: "",
+      type: "cri",
+      allMackerData: ["", "", "", "", ""],
+      placeSearch: ''
+    };
+  },
+  methods: {
+    // 地图对象
+    initMaps(map) {
+      const _that = this;
+      this.map = map;
+      this.mouseTool = new AMap.MouseTool(map);
+      AMap.event.addListener(map, "rightclick", function (e) {
+        _that.mouseTool.close(true);
+      });
+      // 画图
+      this.mouseTool.on("draw", function (e) {
+        // 设置全局状态为空
+        _that.$store.commit("center", "");
+        // console.log(e)
+        if (e.obj.Ce.center) {
+          _that.type = "cri";
+          _that.center = e.obj.Ce.center;
+          _that.radius = e.obj.Ce.radius;
+          // console.log(e.obj.Ce.center,e.obj.Ce.radius)
+        } else {
+          _that.type = "rei";
+          console.log(e.obj.Ce.path);
+          _that.points = e.obj.Ce.path;
+        }
+      });
+    },
+    getListInfo(centent, radius) {
+      // console.log("value值", this.value);
+      let yiIcon = require("../../../../assets/images/cszh/jyicon.png");
+      let wzIcon = require("../../../../assets/images/cszh/wzicon.png");
+      let bnIcon = require("../../../../assets/images/cszh/bnicon.png");
+      let fhIcon = require("../../../../assets/images/cszh/fhicon.png");
+      let spIcon = require("../../../../assets/images/cszh/spicon.png");
+      let resoureArea = false,
+        resoureArticleStorehouse = false,
+        resoureProtectTarget = false,
+        resoureTeam = false,
+        riskCamera = false;
+      this.value.forEach((ele) => {
+        if (ele == 0) {
+          resoureTeam = true;
+        } else if (ele == 1) {
+          resoureArticleStorehouse = true;
+        } else if (ele == 2) {
+          resoureArea = true;
+        } else if (ele == 3) {
+          resoureProtectTarget = true;
+        } else if (ele == 4) {
+          riskCamera = true;
+        }
+      });
+      let data = {
+        ...allUrl.searchSourceByPoint,
+        params: {
+          x: parseFloat(centent.lng),
+          y: parseFloat(centent.lat),
+          radius: radius / 1000,
+          title: this.serchAdd,
+          resoureArea,
+          resoureArticleStorehouse,
+          resoureProtectTarget,
+          resoureTeam,
+          riskCamera,
+          type: "1",
+        },
+      };
+      // console.log("riskCamera是否为true", riskCamera);
+      this.apix(data)
+        .then((res) => {
+          // console.log(res, "11111111111111", this.value);
+          this.render(
+            resoureTeam,
+            res.resoureTeam ? res.resoureTeam : "",
+            "allMackerData",
+            0,
+            yiIcon
+          );
+          this.render(
+            resoureArticleStorehouse,
+            res.resoureArticleStorehouse ? res.resoureArticleStorehouse : "",
+            "allMackerData",
+            1,
+            wzIcon
+          );
+          this.render(
+            resoureArea,
+            res.resoureArea ? res.resoureArea : "",
+            "allMackerData",
+            2,
+            bnIcon
+          );
+          this.render(
+            resoureProtectTarget,
+            res.resoureProtectTarget ? res.resoureProtectTarget : "",
+            "allMackerData",
+            3,
+            fhIcon
+          );
+          this.render(
+            riskCamera,
+            res.riskCamera ? res.riskCamera : "",
+            "allMackerData",
+            4,
+            spIcon
+          );
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    },
+    // 落图渲染
+    render(isData, arrData, str, num, imgUrl) {
+      if (isData) {
+        this[str][num] = this.forEachData(arrData, imgUrl);
+      } else if (this[str][num].length != 0) {
+        this.map.remove(this[str][num]);
+        this[str][num] = "";
+      }
+    },
+    forEachData(data, imgUrl) {
+      const _that = this;
+      if (data.length != 0) {
+        let arrData = [];
+        // 创建一个 Icon
+        var startIcon = new AMap.Icon({
+          // 图标的取图地址
+          size: new AMap.Size(40, 40),
+          image: imgUrl,
+          // 图标所用图片大小
+          imageSize: new AMap.Size(40, 40),
+          // 图标取图偏移量
+          imageOffset: new AMap.Pixel(0, 0),
+        });
+        data.forEach((ele) => {
+          if (ele.longitude && ele.latitude) {
+            let obj = {
+              icon: startIcon,
+              position: [ele.longitude, ele.latitude],
+            };
+            let marker = new AMap.Marker({
+              map: _that.map,
+              icon: obj.icon,
+              position: obj.position,
+              offset: new AMap.Pixel(-20, -40),
+            });
+            arrData.push(marker);
+          }
+          if (ele.x&&ele.y) {
+            let obj = {
+              icon:startIcon,
+              position:[ele.x,ele.y]
+            }
+            let marker = new AMap.Marker({
+                map: _that.map,
+                icon: obj.icon,
+                position: obj.position,
+                offset: new AMap.Pixel(-20, -40)
+            });
+            arrData.push(marker)
+          }
+        });
+        return arrData;
+      } else {
+        return "";
+      }
+    },
+    getrei() {
+      // console.log("value值", this.value);
+      let yiIcon = require("../../../../assets/images/cszh/jyicon.png");
+      let wzIcon = require("../../../../assets/images/cszh/wzicon.png");
+      let bnIcon = require("../../../../assets/images/cszh/bnicon.png");
+      let fhIcon = require("../../../../assets/images/cszh/fhicon.png");
+      let spIcon = require("../../../../assets/images/cszh/spicon.png");
+      let resoureArea = false,
+        resoureArticleStorehouse = false,
+        resoureProtectTarget = false,
+        resoureTeam = false,
+        riskCamera = false;
+      this.value.forEach((ele) => {
+        if (ele == 0) {
+          resoureTeam = true;
+        } else if (ele == 1) {
+          resoureArticleStorehouse = true;
+        } else if (ele == 2) {
+          resoureArea = true;
+        } else if (ele == 3) {
+          resoureProtectTarget = true;
+        } else if (ele == 4) {
+          riskCamera = true;
+        }
+      });
+      let arr =
+        "POLYGON((" +
+        this.points[0].lng +
+        " " +
+        this.points[0].lat +
+        "," +
+        this.points[1].lng +
+        " " +
+        this.points[1].lat +
+        "," +
+        this.points[2].lng +
+        " " +
+        this.points[2].lat +
+        "," +
+        this.points[3].lng +
+        " " +
+        this.points[3].lat +
+        "," +
+        this.points[0].lng +
+        " " +
+        this.points[0].lat +
+        "))";
+      let data = {
+        ...allUrl.searchAppDbResourseByPolygon,
+        params: {
+          points: arr,
+          title: this.serchAdd ? this.serchAdd.trim() : "",
+          resoureArea,
+          resoureArticleStorehouse,
+          resoureProtectTarget,
+          resoureTeam,
+          riskCamera,
+        },
+      };
+      this.apix(data)
+        .then((res) => {
+          // console.log(res, this.value);
+          this.render(
+            resoureTeam,
+            res.resoureTeam ? res.resoureTeam : "",
+            "allMackerData",
+            [0],
+            yiIcon
+          );
+          this.render(
+            resoureArticleStorehouse,
+            res.resoureArticleStorehouse ? res.resoureArticleStorehouse : "",
+            "allMackerData",
+            [1],
+            wzIcon
+          );
+          this.render(
+            resoureArea,
+            res.resoureArea ? res.resoureArea : "",
+            "allMackerData",
+            [2],
+            bnIcon
+          );
+          this.render(
+            resoureProtectTarget,
+            res.resoureProtectTarget ? res.resoureProtectTarget : "",
+            "allMackerData",
+            [3],
+            fhIcon
+          );
+          this.render(
+            riskCamera,
+            res.riskCamera ? res.riskCamera : "",
+            "allMackerData",
+            [4],
+            spIcon
+          );
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    },
+    // 地图信息检索
+    serchIn(str) {
+      const _that = this;
+      AMap.service(["AMap.PlaceSearch"], function () {
+        var placeSearch = new AMap.PlaceSearch({
+          //构造地点查询类
+          pageSize: 5, // 单页显示结果条数
+          pageIndex: 1, // 页码
+          // city: "010", // 兴趣点城市
+          // citylimit: true,  //是否强制限制在设置的城市内搜索
+          map: _that.map, // 展现结果的地图实例
+          panel: "panel", // 结果列表将在此容器中进行展示。
+          autoFitView: true, // 是否自动调整地图视野使绘制的 Marker点都处于视口的可见范围
+        });
+        // console.log("search1111", placeSearch);
+        //关键字查询
+        placeSearch.search(str);
+        _that.placeSearch = placeSearch;
+      });
+    },
+    // 多边形检索
+    polygonSarchE(ser) {
+      if (this.type == "cri") {
+        this.getListInfo(this.center, this.radius);
+      } else {
+        this.getrei();
+      }
+    },
+    uptypes(data) {
+      this.types = data;
+      if (data == 2) {
+        document.getElementById("panel").style.display = "none";
+        this.serchAdd = "";
+      } else {
+        document.getElementById("panel").innerHTML = "";
+        document.getElementById("panel").style.display = "block";
+        this.serchAdd = "";
+      }
+    },
+    // 矩形
+    drawRectangle() {
+      this.mouseTool.rectangle({
+        // strokeColor:'red',
+        // strokeOpacity:0,
+        // strokeWeight: 0,
+        fillColor: "#1791fc",
+        fillOpacity: 0.5,
+        // strokeStyle还支持 solid
+        // strokeStyle: 'solid',
+        // strokeDasharray: [30,10],
+      });
+    },
+    // 圆形
+    drawCircle() {
+      this.mouseTool.circle({
+        // strokeColor: "#FF33FF",
+        // strokeOpacity: 0,
+        // strokeWeight: 0,
+        // strokeOpacity: 0,
+        fillColor: "#1791fc",
+        fillOpacity: 0.4,
+        // strokeStyle: 'solid',
+        // 线样式还支持 'dashed'
+        // strokeDasharray: [30,10],
+      });
+    },
+    serchVla() {
+      // 清除上一次的结果
+      this.allMackerData.forEach(element => {
+        if (element) {
+          this.map.remove(element);
+        }
+      });
+      this.allMackerData = ['','','','',''];
+      if (this.types == 1) {
+        this.serchIn(this.serchAdd);
+      } else {
+        this.polygonSarchE(this.serchAdd);
+      }
+    },
+  },
+  watch: {},
+  mounted() {},
+};
+</script>
+
+<style scoped>
+p,
+h1,
+h2,
+h5,
+h6,
+ul,
+li {
+  margin: 0;
+  padding: 0;
+}
+.search_wrap {
+  width: 100%;
+  /* background: url('../../../../assets/images/cszh/xs2.png')no-repeat; */
+  background-size: 100% 100%;
+  border-bottom: 1px solid transparent;
+}
+.search_deformation {
+  width: 100%;
+  display: flex;
+  list-style: none;
+  padding: 10px 10px 5px 10px;
+}
+.search_deformation > li {
+  color: #73cafd;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin: 0 5px;
+  cursor: pointer;
+}
+.search_deformation > li > p {
+  font-size: 14px;
+}
+.oneY {
+  width: 21px;
+  height: 21px;
+  background: rgba(13, 121, 255, 1);
+  border-radius: 50%;
+  border: 2px solid rgba(171, 217, 252, 1);
+}
+.towF {
+  width: 21px;
+  height: 21px;
+  background: rgba(13, 121, 255, 1);
+  border: 2px solid rgba(171, 217, 252, 1);
+}
+
+.searchContent {
+  padding: 0 15px;
+  display: flex;
+  align-items: center;
+  margin-bottom: 17px;
+}
+.searchContent > div {
+  width: 160px;
+  height: 33px;
+}
+.searchContent > input {
+  width: 98px;
+  height: 30px;
+  border: 1px solid rgba(76, 165, 248, 1);
+  margin: 0 5px;
+  background: transparent;
+  box-sizing: border-box;
+  padding: 5px;
+  outline: none;
+  color: #fff;
+}
+.searchContent > button {
+  width: 55px;
+  background: transparent;
+  border: 1px solid rgba(76, 165, 248, 1);
+  height: 30px;
+  border-radius: 3px;
+  color: #fff;
+  outline: none;
+  cursor: pointer;
+}
+.searchContent /deep/ .el-tag.el-tag--info {
+  background: transparent;
+  color: #fff;
+}
+.searchContent /deep/ .el-select__tags {
+  min-width: 100%;
+}
+.searchContent /deep/ .el-input__inner {
+  padding: 0;
+  background-color: transparent;
+  border-color: #4ca5f8;
+  height: 33px;
+}
+.searchContent
+  /deep/
+  .el-select-dropdown.is-multiple
+  .el-select-dropdown__item.selected,
+.searchContent
+  /deep/
+  .el-select-dropdown.is-multiple
+  .el-select-dropdown__item.selected.hover {
+  background: transparent !important;
+}
+/* .searchContent /deep/ .el-select-dropdown {
+  width: 80px;
+} */
+
+.clear-search-button {
+  cursor: pointer;
+  display: inline-block;
+  height: 28px !important;
+  width: unset !important;
+  border: 1px solid red;
+  color: red;
+  border-radius: 3px;
+  line-height: 28px;
+  flex-grow: 0;
+  font-size: 14px;
+  font-family: Arial;
+  padding: 0 10px;
+  margin-left: 5px;
+}
+
+</style>

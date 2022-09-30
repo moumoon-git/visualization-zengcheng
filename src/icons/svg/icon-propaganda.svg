@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="14px" height="13px" viewBox="0 0 14 13" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 58 (84663) - https://sketch.com -->
+    <title>防控宣传</title>
+    <desc>Created with Sketch.</desc>
+    <g id="防控任务" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="左侧导航栏图标" transform="translate(-23.000000, -230.000000)">
+            <g id="编组-6" transform="translate(0.000000, 50.000000)">
+                <g id="menu备份-4" transform="translate(23.000000, 176.000000)">
+                    <g id="防控宣传" transform="translate(0.000000, 4.000000)">
+                        <path d="M12.4444444,12.0503003 C12.4444444,12.1816817 12.3134503,12.4444444 12.051462,12.4444444 L0.392982456,12.4444444 C0.130994152,12.3130631 0,12.3130631 0,12.0503003 L0,3.11636637 C0,2.98498498 0.130994152,2.72222222 0.392982456,2.72222222 L12.1824561,2.72222222 C12.3134503,2.72222222 12.4444444,2.98498498 12.4444444,3.11636637 L12.4444444,12.0503003 Z M0.65497076,11.6561562 L11.7894737,11.6561562 L11.7894737,3.51051051 L0.65497076,3.51051051 L0.65497076,11.6561562 Z" id="Shape" fill="#4E8CEE" fill-rule="nonzero"></path>
+                        <path d="M13.5989583,10.8888889 C13.4652778,10.8888889 13.1979167,10.7560976 13.1979167,10.4905149 L13.1979167,0.796747967 L1.56770833,0.796747967 C1.43402778,0.796747967 1.16666667,0.66395664 1.16666667,0.398373984 C1.16666667,0.265582656 1.30034722,0 1.56770833,0 L13.5989583,0 C13.7326389,0 14,0.132791328 14,0.398373984 L14,10.4905149 C14,10.7560976 13.7326389,10.8888889 13.5989583,10.8888889 Z" id="Shape" fill="#BAD4FF" fill-rule="nonzero"></path>
+                        <rect id="Rectangle-7" fill="#4E8CEE" x="2.33333333" y="5.05555556" width="1.94444444" height="1" rx="0.5"></rect>
+                        <rect id="Rectangle-7" fill="#4E8CEE" x="5.25" y="5.05555556" width="1.94444444" height="1" rx="0.5"></rect>
+                        <rect id="Rectangle-7" fill="#4E8CEE" x="8.16666667" y="5.05555556" width="1.94444444" height="1" rx="0.5"></rect>
+                        <rect id="Rectangle-7" fill="#BAD4FF" x="2.33333333" y="6.61111111" width="1.94444444" height="1" rx="0.5"></rect>
+                        <rect id="Rectangle-7" fill="#BAD4FF" x="2.33333333" y="8.16666667" width="1.94444444" height="1" rx="0.5"></rect>
+                        <rect id="Rectangle-7" fill="#BAD4FF" x="5.25" y="6.61111111" width="1.94444444" height="1" rx="0.5"></rect>
+                        <rect id="Rectangle-7" fill="#BAD4FF" x="8.16666667" y="6.61111111" width="1.94444444" height="1" rx="0.5"></rect>
+                    </g>
+                </g>
+            </g>
+        </g>
+    </g>
+</svg>

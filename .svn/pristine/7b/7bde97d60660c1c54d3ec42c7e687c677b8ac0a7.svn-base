@@ -1,0 +1,257 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ChangeListManager">
+    <list default="true" id="4d55f1c2-10c8-44d0-acd9-6457bc47ec0d" name="Default Changelist" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/package-lock.json" beforeDir="false" afterPath="$PROJECT_DIR$/package-lock.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/package.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/App.vue" beforeDir="false" afterPath="$PROJECT_DIR$/src/App.vue" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/assets/api/allApiUrl.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/assets/api/allApiUrl.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/assets/images/play.png" beforeDir="false" afterPath="$PROJECT_DIR$/src/assets/images/play.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/assets/js/config.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/assets/js/config.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/router/index.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/router/index.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/store/index.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/store/index.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/view/New_General/NewGeneral.vue" beforeDir="false" afterPath="$PROJECT_DIR$/src/view/New_General/NewGeneral.vue" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/view/New_General/NewGeneralTemp/histogram.vue" beforeDir="false" afterPath="$PROJECT_DIR$/src/view/New_General/NewGeneralTemp/histogram.vue" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/view/New_General/NewGeneralTemp/significants.vue" beforeDir="false" afterPath="$PROJECT_DIR$/src/view/New_General/NewGeneralTemp/significants.vue" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/view/common/pop_upWindows.vue" beforeDir="false" afterPath="$PROJECT_DIR$/src/view/common/pop_upWindows.vue" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/view/common/top_time/selectTime.vue" beforeDir="false" afterPath="$PROJECT_DIR$/src/view/common/top_time/selectTime.vue" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/view/test/test.vue" beforeDir="false" afterPath="$PROJECT_DIR$/src/view/test/test.vue" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/view/warning/humanSockjs.vue" beforeDir="false" afterPath="$PROJECT_DIR$/src/view/warning/humanSockjs.vue" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/view/warning/templat/schoolTop.vue" beforeDir="false" afterPath="$PROJECT_DIR$/src/view/warning/templat/schoolTop.vue" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/view/warning/templat/timeline.vue" beforeDir="false" afterPath="$PROJECT_DIR$/src/view/warning/templat/timeline.vue" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/view/warning/templat/trackCamera.vue" beforeDir="false" afterPath="$PROJECT_DIR$/src/view/warning/templat/trackCamera.vue" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/view/warning/warnings.vue" beforeDir="false" afterPath="$PROJECT_DIR$/src/view/warning/warnings.vue" afterDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="package.json" />
+        <option value="JavaScript File" />
+        <option value="Vue Single File Component" />
+      </list>
+    </option>
+  </component>
+  <component name="ProjectId" id="1THSFNejLCK9jWlvEo7bdbbaSoT" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showExcludedFiles" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent">
+    <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
+    <property name="WebServerToolWindowFactoryState" value="false" />
+    <property name="com.intellij.ide.scratch.LRUPopupBuilder$1/New Scratch File" value="CSS" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$" />
+    <property name="node.js.detected.package.eslint" value="true" />
+    <property name="node.js.detected.package.tslint" value="true" />
+    <property name="node.js.path.for.package.eslint" value="project" />
+    <property name="node.js.path.for.package.tslint" value="project" />
+    <property name="node.js.selected.package.eslint" value="(autodetect)" />
+    <property name="node.js.selected.package.tslint" value="(autodetect)" />
+    <property name="nodejs_package_manager_path" value="npm" />
+    <property name="prettierjs.PrettierConfiguration.Package" value="C:\Users\Administrator\Desktop\index\node_modules\prettier" />
+    <property name="settings.editor.selected.configurable" value="preferences.keymap" />
+    <property name="ts.external.directory.path" value="H:\webstrom\WebStorm2019.3.1\plugins\JavaScriptLanguage\jsLanguageServicesImpl\external" />
+  </component>
+  <component name="RecentsManager">
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="C:\Users\Administrator\Desktop\visualizationVue\src\view\common" />
+      <recent name="C:\Users\Administrator\Desktop\index\src\view" />
+      <recent name="C:\Users\Administrator\Desktop\index\src\assets" />
+      <recent name="C:\Users\Administrator\Desktop\index\src\assets\images" />
+    </key>
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="C:\Users\Administrator\Desktop\visualizationVue" />
+      <recent name="C:\Users\Administrator\Desktop\visualizationVue\src\assets\js" />
+      <recent name="C:\Users\Administrator\Desktop\visualizationVue\src\view\command\right" />
+      <recent name="C:\Users\Administrator\Desktop\visualizationVue\src\view\warning" />
+      <recent name="C:\Users\Administrator\Desktop\visualizationVue\src\view\common" />
+    </key>
+  </component>
+  <component name="ServiceViewManager">
+    <option name="viewStates">
+      <list>
+        <serviceView>
+          <treeState>
+            <expand />
+            <select />
+          </treeState>
+        </serviceView>
+      </list>
+    </option>
+  </component>
+  <component name="SvnConfiguration" cleanupOnStartRun="true">
+    <configuration>C:\Users\Administrator\AppData\Roaming\Subversion</configuration>
+    <supportedVersion>125</supportedVersion>
+  </component>
+  <component name="SvnFileUrlMappingImpl">
+    <option name="myMappingRoots">
+      <list>
+        <SvnCopyRootSimple>
+          <option name="myVcsRoot" value="C:\Users\Administrator\Desktop\visualizationVue" />
+          <option name="myCopyRoot" value="C:\Users\Administrator\Desktop\visualizationVue" />
+        </SvnCopyRootSimple>
+      </list>
+    </option>
+    <option name="myMoreRealMappingRoots">
+      <list>
+        <SvnCopyRootSimple>
+          <option name="myVcsRoot" value="C:\Users\Administrator\Desktop\visualizationVue" />
+          <option name="myCopyRoot" value="C:\Users\Administrator\Desktop\visualizationVue" />
+        </SvnCopyRootSimple>
+      </list>
+    </option>
+  </component>
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="4d55f1c2-10c8-44d0-acd9-6457bc47ec0d" name="Default Changelist" comment="" />
+      <created>1573115422972</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1573115422972</updated>
+      <workItem from="1573115424184" duration="6330000" />
+      <workItem from="1573174666562" duration="52000" />
+      <workItem from="1573174734815" duration="2371000" />
+      <workItem from="1573177519501" duration="7680000" />
+      <workItem from="1573434392732" duration="599000" />
+      <workItem from="1573519176935" duration="306000" />
+      <workItem from="1573536237250" duration="1762000" />
+      <workItem from="1574238182812" duration="1787000" />
+      <workItem from="1574759248347" duration="1235000" />
+      <workItem from="1574814922303" duration="15000" />
+      <workItem from="1575448770896" duration="2805000" />
+      <workItem from="1577172872657" duration="1136000" />
+      <workItem from="1577234985070" duration="8152000" />
+      <workItem from="1577334428045" duration="1900000" />
+      <workItem from="1577337757298" duration="1389000" />
+      <workItem from="1577672079583" duration="19621000" />
+      <workItem from="1577753136885" duration="2176000" />
+      <workItem from="1577773429616" duration="1216000" />
+      <workItem from="1577925567029" duration="28946000" />
+      <workItem from="1578011719221" duration="14911000" />
+      <workItem from="1578098611585" duration="1000" />
+      <workItem from="1578101303547" duration="572000" />
+      <workItem from="1578101912476" duration="139000" />
+      <workItem from="1578103303421" duration="3676000" />
+      <workItem from="1578107001923" duration="17829000" />
+      <workItem from="1578184864711" duration="13545000" />
+      <workItem from="1578210323338" duration="9000" />
+      <workItem from="1578876057215" duration="24532000" />
+      <workItem from="1578961359792" duration="27084000" />
+      <workItem from="1579048268885" duration="28921000" />
+      <workItem from="1579134703401" duration="28352000" />
+      <workItem from="1579220745318" duration="28466000" />
+      <workItem from="1579307410837" duration="85596000" />
+      <workItem from="1579484653495" duration="19368000" />
+      <workItem from="1579505282299" duration="5342000" />
+      <workItem from="1579567962969" duration="5004000" />
+      <workItem from="1580650688888" duration="683000" />
+      <workItem from="1580651922671" duration="588000" />
+      <workItem from="1580652756766" duration="557000" />
+      <workItem from="1580653374831" duration="79000" />
+      <workItem from="1580654063391" duration="1289000" />
+      <workItem from="1580689309012" duration="19324000" />
+      <workItem from="1580781377533" duration="29131000" />
+      <workItem from="1580869063703" duration="20498000" />
+      <workItem from="1580955821333" duration="14615000" />
+      <workItem from="1580974182183" duration="4979000" />
+      <workItem from="1581054135356" duration="22000" />
+      <workItem from="1581054158886" duration="4757000" />
+      <workItem from="1581165845631" duration="1059000" />
+      <workItem from="1581217975062" duration="11000" />
+      <workItem from="1581990598376" duration="50000" />
+    </task>
+    <task id="LOCAL-00001">
+      <created>1580989359116</created>
+      <option name="number" value="00001" />
+      <option name="presentableId" value="LOCAL-00001" />
+      <option name="project" value="LOCAL" />
+      <updated>1580989359116</updated>
+    </task>
+    <option name="localTasksCounter" value="2" />
+    <servers />
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="1" />
+  </component>
+  <component name="VcsManagerConfiguration">
+    <option name="LAST_COMMIT_MESSAGE" value="" />
+  </component>
+  <component name="WindowStateProjectService">
+    <state x="600" y="179" key="#Notifications" timestamp="1580650722391">
+      <screen x="0" y="0" width="1920" height="1040" />
+    </state>
+    <state x="600" y="179" key="#Notifications/0.0.1920.1040@0.0.1920.1040" timestamp="1580650722391" />
+    <state x="415" y="29" width="1200" height="985" key="CommitChangelistDialog2" timestamp="1581990651052">
+      <screen x="0" y="0" width="1536" height="834" />
+    </state>
+    <state x="415" y="29" key="CommitChangelistDialog2/0.0.1536.834@0.0.1536.834" timestamp="1581990651052" />
+    <state x="519" y="36" width="1200" height="985" key="CommitChangelistDialog2/0.0.1920.1040@0.0.1920.1040" timestamp="1580989338711" />
+    <state x="686" y="200" key="FileChooserDialogImpl" timestamp="1581217984259">
+      <screen x="0" y="0" width="1536" height="834" />
+    </state>
+    <state x="686" y="200" key="FileChooserDialogImpl/0.0.1536.834@0.0.1536.834" timestamp="1581217984259" />
+    <state x="858" y="249" key="FileChooserDialogImpl/0.0.1920.1040@0.0.1920.1040" timestamp="1580784113586" />
+    <state width="1459" height="245" key="GridCell.Tab.0.bottom" timestamp="1580651374554">
+      <screen x="0" y="0" width="1920" height="1040" />
+    </state>
+    <state width="1459" height="245" key="GridCell.Tab.0.bottom/0.0.1920.1040@0.0.1920.1040" timestamp="1580651374554" />
+    <state width="1459" height="245" key="GridCell.Tab.0.center" timestamp="1580651374554">
+      <screen x="0" y="0" width="1920" height="1040" />
+    </state>
+    <state width="1459" height="245" key="GridCell.Tab.0.center/0.0.1920.1040@0.0.1920.1040" timestamp="1580651374554" />
+    <state width="1459" height="245" key="GridCell.Tab.0.left" timestamp="1580651374554">
+      <screen x="0" y="0" width="1920" height="1040" />
+    </state>
+    <state width="1459" height="245" key="GridCell.Tab.0.left/0.0.1920.1040@0.0.1920.1040" timestamp="1580651374554" />
+    <state width="1459" height="245" key="GridCell.Tab.0.right" timestamp="1580651374554">
+      <screen x="0" y="0" width="1920" height="1040" />
+    </state>
+    <state width="1459" height="245" key="GridCell.Tab.0.right/0.0.1920.1040@0.0.1920.1040" timestamp="1580651374554" />
+    <state x="163" y="55" key="SettingsEditor" timestamp="1581083441993">
+      <screen x="0" y="0" width="1536" height="834" />
+    </state>
+    <state x="163" y="55" key="SettingsEditor/0.0.1536.834@0.0.1536.834" timestamp="1581083441993" />
+    <state x="711" y="157" key="SettingsEditor/0.0.1920.1040@0.0.1920.1040" timestamp="1580653278194" />
+    <state x="657" y="281" key="com.intellij.openapi.vcs.update.UpdateOrStatusOptionsDialogupdate-v2" timestamp="1581826495654">
+      <screen x="0" y="0" width="1536" height="834" />
+    </state>
+    <state x="657" y="281" key="com.intellij.openapi.vcs.update.UpdateOrStatusOptionsDialogupdate-v2/0.0.1536.834@0.0.1536.834" timestamp="1581826495654" />
+    <state x="821" y="351" key="com.intellij.openapi.vcs.update.UpdateOrStatusOptionsDialogupdate-v2/0.0.1920.1040@0.0.1920.1040" timestamp="1580989221000" />
+    <state x="831" y="258" key="run.anything.popup" timestamp="1580967282506">
+      <screen x="0" y="0" width="1920" height="1040" />
+    </state>
+    <state x="831" y="258" key="run.anything.popup/0.0.1920.1040@0.0.1920.1040" timestamp="1580967282506" />
+    <state x="577" y="186" width="672" height="676" key="search.everywhere.popup" timestamp="1580958207040">
+      <screen x="0" y="0" width="1920" height="1040" />
+    </state>
+    <state x="577" y="186" width="672" height="676" key="search.everywhere.popup/0.0.1920.1040@0.0.1920.1040" timestamp="1580958207040" />
+    <state x="1219" y="206" key="svn.repositoryBrowser" timestamp="1580655305893">
+      <screen x="0" y="0" width="1920" height="1040" />
+    </state>
+    <state x="1219" y="206" key="svn.repositoryBrowser/0.0.1920.1040@0.0.1920.1040" timestamp="1580655305893" />
+  </component>
+  <component name="XDebuggerManager">
+    <breakpoint-manager>
+      <breakpoints>
+        <line-breakpoint enabled="true" type="javascript">
+          <url>file://$PROJECT_DIR$/build/build.js</url>
+          <line>39</line>
+          <option name="timeStamp" value="18" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="javascript">
+          <url>file://$PROJECT_DIR$/config/index.js</url>
+          <line>5</line>
+          <option name="timeStamp" value="20" />
+        </line-breakpoint>
+      </breakpoints>
+    </breakpoint-manager>
+  </component>
+</project>

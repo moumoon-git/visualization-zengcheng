@@ -1,0 +1,182 @@
+.winInfos{
+  width:322px;
+  height:155px;
+  background:rgba(11,30,75,.8);
+  position: relative;
+  padding: 18px 20px;
+  border-radius: 6px;
+}
+.close_winInfo_dl{
+  position: absolute;
+  width: 20px;
+  height: 20px;
+  top: 7px;
+  right: 8px;
+  cursor: pointer;
+}
+.winInfo_content{
+  color: #61F0FF;
+  display: flex;
+  align-items: flex-start;
+  margin-bottom: 20px;
+}
+.winInfo_content>input,.winInfo_content>textarea{
+  outline: none;
+  background: transparent;
+  border:1px solid rgba(13,121,255,1);
+  resize:none;
+  color: #61F0FF;
+  padding-left: 5px;
+}
+.determine_dl{
+  text-align: center;
+  color: #61F0FF;
+  cursor: pointer;
+  width: 50px;
+  margin: auto;
+  border: 1px solid rgba(13,121,255,1);
+}
+.avatar-uploader .el-upload {
+    border: 1px dashed #d9d9d9;
+    border-radius: 6px;
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+  }
+  .avatar-uploader .el-upload:hover {
+    border-color: #409EFF;
+  }
+  .avatar-uploader-icon {
+    font-size: 28px;
+    color: #8c939d;
+    width:64px;
+    height:59px;
+    line-height: 59px !important;
+    text-align: center;
+    display: flex !important;
+    align-items: center;
+    justify-content: center;
+  }
+  .avatar {
+    width:64px;
+    height:59px;
+    display: block;
+  }
+#panelCar>.amap-call{
+  display: none;
+}
+#panelCar .amap-lib-driving .planTitle,#panelCar .amap-lib-driving{
+  background: transparent;
+  border: 0;
+  color: #fff;
+}
+.amap-lib-driving .planTitle p{
+  color: #fff;
+}
+.amap-lib-driving .plan dt:hover{
+  background: transparent !important;
+}
+
+
+#panelCar::-webkit-scrollbar {
+  /*滚动条整体样式*/
+  width : 5px;  /*高宽分别对应横竖滚动条的尺寸*/
+  height: 1px;
+}
+#panelCar::-webkit-scrollbar-thumb {
+  /*滚动条里面小方块*/
+  border-radius: 10px;
+  box-shadow   : inset 0 0 5px rgba(0, 0, 0, 0.2);
+  background   : #535353;
+}
+#panelCar::-webkit-scrollbar-track {
+  /*滚动条里面轨道*/
+  box-shadow   : inset 0 0 5px rgba(0, 0, 0, 0.2);
+  border-radius: 10px;
+  background   : #ededed;
+}
+/* .amap-icon img{
+  width: 25px;
+  height: 34px;
+} */
+.control_wrap{
+  display: flex;
+  align-items: center;
+}
+.playImg{
+  display: flex;
+  align-items: center;
+  margin-right: 16px;
+}
+.playImg>img{
+  width: 15px;
+  height: 17px;
+  cursor: pointer;
+}
+.schedule{
+  width: 105px;
+  margin-right: 8px;
+  display: flex;
+  align-items: auto;
+}
+.schedule /deep/ .el-slider__runway{
+  background: #606266;
+}
+.schedule /deep/ .el-slider__bar{
+  background: #fff;
+}
+.schedule /deep/ .el-slider__button{
+  border: 3px solid #fff;
+  background-color: #606266;
+  width: 12px;
+  height: 12px;
+}
+.timeDis{
+  color: #fff;
+  margin-right: 8px;
+  display: flex;
+  align-items: center;
+}
+.mute{
+  width: 20px;
+  height: 20px;
+  cursor: pointer;
+  margin-right: 8px;
+  display: flex;
+  align-items: center;
+}
+.mute>img{
+  width: 18px;
+  height: 16px;
+}
+.downloadAuido{
+  width: 17px;
+  height: 18px;
+  background: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAwAAAASCAYAAABvqT8MAAAA2UlEQVQ4T2NkQAP///+fBhSSRhLOZmRkfALjM2LR8BMoxoYkrg/UcAmfhutASQ0kDZpADTeGuAYNoB9u4vPDRaCkHpKnOYAaQCEHBozAcA8G0rlA/BCI/wJxEBDzI2lYB2R/BGJZID4E0iABZKwFYiv0OEHjfwPyHeARB9TYCBSow6FpG9BZ3mAnISsAakoB8mejaZoOVJyFz9M+QMnNUAVtQMXVyAZgpCWQJNCmQCClBFTci+5ErBrweZ50DUDrFwJNlAS5hECwggz/CoqHQ0CGDHqI4dD8BQDxO1M7N1830gAAAABJRU5ErkJggg==")no-repeat;
+  background-size: 100% 100%;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+}
+.schedule input[type=range]{
+  outline: none;
+  margin-right: 9px;
+  cursor: pointer;
+}
+.schedule input[type=range] {
+  -webkit-appearance: none;/*清除系统默认样式*/
+  width: 100%;
+  background: -webkit-linear-gradient(#eee, #eee) no-repeat, #eee;/*设置左边颜色为#61bd12，右边颜色为#ddd*/
+  background-size: 75% 100%;/*设置左右宽度比例*/
+  height: 2px;/*横条的高度*/
+  border-radius: 0.1rem;
+}
+/*拖动块的样式*/
+.schedule input[type=range]::-webkit-slider-thumb {
+  -webkit-appearance: none;/*清除系统默认样式*/
+  height: 8px;/*拖动块高度*/
+  width: 8px;/*拖动块宽度*/
+  background: #fff;/*拖动块背景*/
+  border-radius: 50%; /*外观设置为圆形*/
+  border: solid 1px #eee; /*设置边框*/
+}
